@@ -1,0 +1,141 @@
+/* colors and general parametrs for all css */
+/* img size */
+/* useful functions */
+/* general */
+* {
+  font-family: Arial;
+  color: #666666;
+  font-size: 18px;
+}
+
+a, a > p, a > span {
+  color: #053e7b;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
+h1 {
+  font-size: 125%;
+  font-weight: bold;
+}
+
+button {
+  background-color: #053e7b;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  border-radius: 10px;
+  border-style: solid;
+  border-color: #053e7b;
+  border-width: 6px;
+}
+button span, button p {
+  color: white;
+  font-size: 125%;
+}
+
+/* top bar with title, menus, etc */
+div.header {
+  position: absolute;
+  background-color: #053e7b;
+  width: 100%;
+  height: 8%;
+  top: 0px;
+  left: 0px;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+div.header span, div.header p, div.header li, div.header h1 {
+  color: white;
+}
+div.header .menu {
+  padding: 3px;
+  margin: 6px;
+}
+div.header .menu img {
+  width: 40px;
+  padding-left: 10px;
+}
+
+div.content {
+  position: absolute;
+  height: 91%;
+  top: 8%;
+  left: 0px;
+  width: 100%;
+  padding-top: 2px;
+}
+div.content * {
+  padding: 3px;
+  margin: 6px;
+}
+
+/* for some pages like chat, shopping bar, bar with options */
+div.footer {
+  background-color: #e9ebee;
+  width: 100%;
+  min-height: 8%;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+
+/* containers flex-box */
+.flex-column-center {
+  display: flex;
+  width: 97%;
+  height: 97%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.flex-column-top {
+  display: flex;
+  width: 97%;
+  height: 97%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  width: 97%;
+  height: 97%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: left;
+  flex-direction: row;
+}
+
+.flex-menu {
+  display: flex;
+  width: 97%;
+  height: 97%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+/*# sourceMappingURL=style.css.map */

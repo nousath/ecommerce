@@ -1,0 +1,154 @@
+/* colors and general parametrs for all css */
+
+$font:Arial;
+$font-size:18px;
+$text-color:#666666;
+$link-color:#053e7b;
+$header-color:#053e7b;
+$footer-color:#e9ebee;
+$bar-height:8%;
+
+/* img size */
+$icon-size:40px;
+$products-size:30%;
+
+/* useful functions */
+@mixin border-radius($radius) {
+ -webkit-border-radius: $radius;
+ -moz-border-radius: $radius;
+ -ms-border-radius: $radius;
+ border-radius: $radius;
+}
+@mixin border-color($color,$width) {
+  border-style:solid;
+  border-color:$color;
+  border-width:$width;
+}
+@mixin separate-elements() {
+  padding:3px;
+  margin:6px;
+}
+@mixin center(){
+  text-align:center;
+  align-items:center;
+}
+@mixin no-border-padding(){
+	border:0px;
+	padding:0px;
+	margin:0px;
+}
+
+/* general */
+* {
+	font-family: $font;
+    color:$text-color;
+    font-size:$font-size;
+}
+
+a , a > p, a > span {
+	color:$link-color;
+	text-decoration: none;
+    cursor:pointer;
+}
+
+ul {
+	list-style:none;
+}
+
+h1{
+	font-size:125%;
+	font-weight:bold;	
+}
+
+button{
+	background-color:$header-color;
+	@include border-radius(10px);
+	span, p {
+		color:white;
+		font-size:125%;
+	}
+	@include border-color($header-color, 6px);
+}
+
+/* top bar with title, menus, etc */
+div.header{
+	position:absolute;
+	background-color:$header-color;
+	width:100%;
+	height:$bar-height;
+	top:0px;
+	left:0px;
+	@include no-border-padding();
+	span, p, li, h1{
+		color:white;
+	}
+	.menu {
+		@include separate-elements();
+		img {
+			width:$icon-size;
+			padding-left:10px;
+		}
+	}
+}
+
+div.content{
+	position:absolute;
+	height:99-$bar-height;
+	top:$bar-height;
+	left:0px;
+	width:100%;
+	padding-top:2px;
+	* {
+		@include separate-elements();
+	}
+}
+
+/* for some pages like chat, shopping bar, bar with options */
+div.footer{
+	background-color:$footer-color;
+	width:100%;
+	min-height:$bar-height;
+	position:absolute;
+	bottom:0px;
+	left:0px;
+	@include no-border-padding();
+}
+
+/* containers flex-box */
+@mixin flex($align:null, $justify:null, $direction:null, $wrap:null, $height:null){
+	display:flex;
+	width:97%;
+	height:97%;
+	@include no-border-padding();
+	@if $align{
+		align-items: $align;
+	}
+	@if $justify{
+		justify-content: $justify;
+	}
+	@if $height{
+		height: $height;
+	}
+	@if $direction{
+		flex-direction:$direction;
+	}
+	@if $wrap{
+		flex-wrap:$wrap;
+	}
+}
+
+.flex-column-center{
+	@include flex(center,center,column);
+}
+
+.flex-column-top{
+	@include flex(center,flex-start,column);
+}
+
+.flex-row{
+	@include flex(center, left,row);
+}
+
+.flex-menu{
+	@include flex(center,space-between,row,nowrap);
+}
