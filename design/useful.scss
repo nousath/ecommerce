@@ -25,9 +25,9 @@
 }
 
 /* containers flex-box */
-@mixin flex($align:null, $justify:null, $direction:null, $wrap:null, $height:null){
+@mixin flex($align:null, $justify:null, $direction:null, $wrap:null, $useallspace:true){
 	display:flex;
-	@if $useallspace {
+	@if $useallspace == true {
 		width:99%;
 		height:99%;
 	}
@@ -37,9 +37,6 @@
 	}
 	@if $justify{
 		justify-content: $justify;
-	}
-	@if $height{
-		height: $height;
 	}
 	@if $direction{
 		flex-direction:$direction;

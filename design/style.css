@@ -39,68 +39,6 @@ button span, button p {
   font-size: 125%;
 }
 
-/* containers flex-box */
-.flex-column-center, .store-create {
-  display: flex;
-  width: 99%;
-  height: 99%;
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.flex-column-top, div.order, .store-main {
-  display: flex;
-  width: 99%;
-  height: 99%;
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: column;
-}
-
-.flex-column-left, div.order .order-product-list {
-  display: flex;
-  width: 99%;
-  height: 99%;
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  align-items: left;
-  justify-content: flex-start;
-  flex-direction: column;
-}
-
-.flex-row-top {
-  display: flex;
-  width: 99%;
-  height: 99%;
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  align-items: center;
-  justify-content: flex-start;
-  flex-direction: row;
-  flex-wrap: nowrap;
-}
-
-.flex-row, div.header .menu-icons {
-  display: flex;
-  width: 99%;
-  height: 99%;
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  align-items: center;
-  justify-content: left;
-  flex-direction: row;
-}
-
 /* top bar with title, menus, etc */
 div.header {
   position: fixed;
@@ -117,6 +55,10 @@ div.header {
 div.header span, div.header p, div.header li, div.header h1 {
   color: white;
 }
+div.header h1 {
+  white-space: nowrap;
+  padding-left: 5px;
+}
 div.header .menu {
   display: flex;
   width: 99%;
@@ -130,6 +72,14 @@ div.header .menu {
   flex-wrap: nowrap;
 }
 div.header .menu-icons {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: left;
+  flex-direction: row;
+  flex-wrap: nowrap;
   padding: 4px;
   margin: 6px;
 }
@@ -161,18 +111,61 @@ div.footer {
 }
 
 /* main pages */
+.store-create {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
 .store-create * {
   padding: 4px;
   margin: 6px;
 }
 
-.store-main * {
-  padding: 2px;
-  margin: 3px;
+.store-main {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+@media (min-width: 600px) {
+  .store-main {
+    width: 100%;
+  }
+  .store-main li {
+    width: 100%;
+  }
+  .store-main .store-description {
+    text-align: center;
+  }
+}
+
+@media (min-width: 600px) {
+  .search {
+    width: 150px;
+  }
 }
 
 /* main class: orders products etc */
 div.order {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: nowrap;
   background-color: #e9ebee;
   -webkit-border-radius: 15px;
   -moz-border-radius: 15px;
@@ -184,8 +177,6 @@ div.order {
 }
 div.order .order-header {
   display: flex;
-  width: 99%;
-  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -193,23 +184,33 @@ div.order .order-header {
   justify-content: flex-start;
   flex-direction: row;
   flex-wrap: nowrap;
-  max-height: 40px;
 }
 div.order .order-header p, div.order .order-header span {
   white-space: nowrap;
 }
 div.order .order-product-list {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: left;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: nowrap;
   overflow-y: auto;
+  width: 100%;
 }
 div.order .order-product-list * {
   padding: 0px !important;
   margin: 2px !important;
 }
+div.order * {
+  padding: 2px;
+  margin: 3px;
+}
 
 div.category-list {
   display: flex;
-  width: 99%;
-  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -217,12 +218,15 @@ div.category-list {
   justify-content: flex-start;
   flex-direction: row;
   flex-wrap: wrap;
+  width: 100%;
+}
+div.category-list * {
+  padding: 2px;
+  margin: 3px;
 }
 div.category-list div.category {
-  max-height: 300px;
+  max-height: 250px;
   display: flex;
-  width: 99%;
-  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -230,41 +234,62 @@ div.category-list div.category {
   justify-content: left;
   flex-direction: column;
   flex-wrap: nowrap;
+  width: 100%;
+  padding: 8px;
 }
 div.category-list div.category div.category-header {
-  max-height: 50px;
   display: flex;
-  width: 99%;
-  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: left;
   flex-direction: row;
   flex-wrap: nowrap;
+  width: 100%;
+  height: 300px;
+  padding-left: 15px;
 }
 
 div.product-list {
-  display: flex;
-  width: 99%;
-  height: 99%;
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  align-items: left;
-  justify-content: flex-start;
-  flex-direction: column;
-  flex-wrap: wrap;
-  max-height: 200px;
-  overflow-x: auto;
+  width: 100%;
+}
+@media (min-width: 600px) {
+  div.product-list {
+    display: flex;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    align-items: left;
+    justify-content: space-around;
+    flex-direction: column;
+    flex-wrap: wrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}
+@media (max-width: 599px) {
+  div.product-list {
+    display: flex;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    align-items: left;
+    justify-content: space-around;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+  }
 }
 div.product-list div.product {
-  height: 150px;
-  width: 150px;
+  max-height: 200px;
+  max-width: 200px;
+  min-width: 150px;
+  min-height: 150px;
+  border-width: 2px;
+  border-color: #e9ebee;
+  border-style: solid;
   display: flex;
-  width: 99%;
-  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -272,6 +297,12 @@ div.product-list div.product {
   justify-content: flex-start;
   flex-direction: column;
   flex-wrap: nowrap;
+}
+@media (max-width: 599px) {
+  div.product-list div.product {
+    padding: 5px;
+    margin: 8px;
+  }
 }
 
 /*# sourceMappingURL=style.css.map */

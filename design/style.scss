@@ -9,6 +9,8 @@ $header-color:#053e7b;
 $footer-color:#e9ebee;
 $bar-height:8%;
 $order-color:#e9ebee;
+$border-color:#e9ebee;
+$mobile-size:600px;
 
 /* img size */
 $icon-size:40px;
@@ -46,27 +48,6 @@ button{
 	@include border-color($header-color, 6px);
 }
 
-/* containers flex-box */
-.flex-column-center{
-	@include flex(center,center,column);
-}
-
-.flex-column-top{
-	@include flex(center,flex-start,column);
-}
-
-.flex-column-left{
-	@include flex(left,flex-start,column);
-}
-
-.flex-row-top{
-	@include flex(center,flex-start,row,nowrap);
-}
-
-.flex-row{
-	@include flex(center,left,row);
-}
-
 /* top bar with title, menus, etc */
 div.header{
 	position:fixed;
@@ -80,11 +61,15 @@ div.header{
 	span, p, li, h1{
 		color:white;
 	}
+	h1{
+		white-space:nowrap;
+		padding-left:5px;
+	}
 	.menu{
-		@include flex(center,space-between,row,nowrap);
+		@include flex(center,space-between,row,nowrap,true);
 	}
 	.menu-icons {
-		@extend .flex-row;
+		@include flex(center,left,row,nowrap,false);
 		@include separate-elements(2);
 		img {
 			width:$icon-size;
@@ -115,63 +100,102 @@ div.footer{
 
 /* main pages */
 .store-create{
-	@extend .flex-column-center;
+	@include flex(center,center,column);
 	* {
 		@include separate-elements(2);
 	}
 }
 
 .store-main{
-	@extend .flex-column-top;
-	* {
-		@include separate-elements(1);
+	@media (min-width:$mobile-size) {
+		width:100%;
+		li {
+			width:100%;
+		}
+		.store-description{
+			text-align:center;
+		}
+	}
+	@include flex(center,flex-start,column);
+}
+
+.search{
+	@media (min-width:$mobile-size) {
+		width:150px
 	}
 }
 
 /* main class: orders products etc */
 div.order{
-	@extend .flex-column-top;
+	@include flex(center,flex-start,column,nowrap,false);
 	background-color:$order-color;
 	@include border-radius(15px);
 	min-height:80px;
 	max-height:150px;
 	padding:5px;
 	.order-header{
-		@include flex(center,flex-start,row,nowrap);
-		max-height:40px;
+		@include flex(center,flex-start,row,nowrap,false);
 		p, span {
 			white-space:nowrap;
 		}
 	}
 	.order-product-list{
-		@extend .flex-column-left;
+		@include flex(left,flex-start,column,nowrap,false);
 		overflow-y:auto;
+		width:100%;
 		* { 
 			padding:0px !important;
 			margin:2px !important;
 		}
 	}
+	* {
+		@include separate-elements(1);
+	}
 }
 
 div.category-list{
-	@include flex(left,flex-start,row,wrap);	
+	@include flex(left,flex-start,row,wrap,false);
+	width:100%;
+	* {
+		@include separate-elements(1);
+	}
 	div.category{
-		max-height:300px;
-		@include flex(center,left,column,nowrap);
+		max-height:250px;
+		@include flex(center,left,column,nowrap,false);
+		width:100%;
+		padding:8px;
 		div.category-header{
-			max-height:50px;
-			@include flex(center,space-between,row,nowrap);
+			@include flex(center,left,row,nowrap,false);
+			width:100%;
+			height:300px;
+			padding-left:15px;
 		}
 	}
 }
 
 div.product-list{
-	@include flex(left,flex-start,column,wrap);
-	max-height:200px;
-	overflow-x:auto;
+	width:100%;
+	@media (min-width:$mobile-size){
+		@include flex(left,space-around,column,wrap,false);
+		overflow-x:auto;
+		overflow-y:hidden;
+	}
+	@media (max-width:$mobile-size - 1){
+		@include flex(left,space-around,row,wrap,false);
+		width:100%;
+	}
 	div.product{
-		height:150px;
-		width:150px;
-		@include flex(center,flex-start,column,nowrap);
+		max-height:200px;
+		max-width:200px;
+		min-width:150px;
+		min-height:150px;
+		border-width:2px;
+		border-color:$border-color;
+		border-style:solid;
+		@media (max-width:$mobile-size - 1){
+			padding:5px;
+			margin:8px;
+		}
+		@include flex(center,flex-start,column,nowrap,false);
 	}
 }
