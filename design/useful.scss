@@ -1,0 +1,50 @@
+/* useful sass functions */
+@mixin border-radius($radius) {
+ -webkit-border-radius: $radius;
+ -moz-border-radius: $radius;
+ -ms-border-radius: $radius;
+ border-radius: $radius;
+}
+@mixin border-color($color,$width) {
+  border-style:solid;
+  border-color:$color;
+  border-width:$width;
+}
+@mixin separate-elements($level) {
+  padding:$level * 2px;
+  margin:$level * 3px;
+}
+@mixin center(){
+  text-align:center;
+  align-items:center;
+}
+@mixin no-border-padding(){
+	border:0px;
+	padding:0px;
+	margin:0px;
+}
+
+/* containers flex-box */
+@mixin flex($align:null, $justify:null, $direction:null, $wrap:null, $height:null){
+	display:flex;
+	@if $useallspace {
+		width:99%;
+		height:99%;
+	}
+	@include no-border-padding();
+	@if $align{
+		align-items: $align;
+	}
+	@if $justify{
+		justify-content: $justify;
+	}
+	@if $height{
+		height: $height;
+	}
+	@if $direction{
+		flex-direction:$direction;
+	}
+	@if $wrap{
+		flex-wrap:$wrap;
+	}
+}

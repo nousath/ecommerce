@@ -1,6 +1,7 @@
-/* colors and general parametrs for all css */
+/* useful sass functions */
+/* containers flex-box */
+/* colors and general parameters for all css */
 /* img size */
-/* useful functions */
 /* general */
 * {
   font-family: Arial;
@@ -38,9 +39,72 @@ button span, button p {
   font-size: 125%;
 }
 
+/* containers flex-box */
+.flex-column-center, .store-create {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.flex-column-top, div.order, .store-main {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.flex-column-left, div.order .order-product-list {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: left;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.flex-row-top {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.flex-row, div.header .menu-icons {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: left;
+  flex-direction: row;
+}
+
 /* top bar with title, menus, etc */
 div.header {
-  position: absolute;
+  position: fixed;
+  z-index: 2;
   background-color: #053e7b;
   width: 100%;
   height: 8%;
@@ -54,10 +118,22 @@ div.header span, div.header p, div.header li, div.header h1 {
   color: white;
 }
 div.header .menu {
-  padding: 3px;
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+div.header .menu-icons {
+  padding: 4px;
   margin: 6px;
 }
-div.header .menu img {
+div.header .menu-icons img {
   width: 40px;
   padding-left: 10px;
 }
@@ -69,10 +145,6 @@ div.content {
   left: 0px;
   width: 100%;
   padding-top: 2px;
-}
-div.content * {
-  padding: 3px;
-  margin: 6px;
 }
 
 /* for some pages like chat, shopping bar, bar with options */
@@ -88,53 +160,117 @@ div.footer {
   margin: 0px;
 }
 
-/* containers flex-box */
-.flex-column-center {
-  display: flex;
-  width: 97%;
-  height: 97%;
-  border: 0px;
-  padding: 0px;
-  margin: 0px;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+/* main pages */
+.store-create * {
+  padding: 4px;
+  margin: 6px;
 }
 
-.flex-column-top {
+.store-main * {
+  padding: 2px;
+  margin: 3px;
+}
+
+/* main class: orders products etc */
+div.order {
+  background-color: #e9ebee;
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  -ms-border-radius: 15px;
+  border-radius: 15px;
+  min-height: 80px;
+  max-height: 150px;
+  padding: 5px;
+}
+div.order .order-header {
   display: flex;
-  width: 97%;
-  height: 97%;
+  width: 99%;
+  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
   align-items: center;
   justify-content: flex-start;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  max-height: 40px;
+}
+div.order .order-header p, div.order .order-header span {
+  white-space: nowrap;
+}
+div.order .order-product-list {
+  overflow-y: auto;
+}
+div.order .order-product-list * {
+  padding: 0px !important;
+  margin: 2px !important;
 }
 
-.flex-row {
+div.category-list {
   display: flex;
-  width: 97%;
-  height: 97%;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: left;
+  justify-content: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+div.category-list div.category {
+  max-height: 300px;
+  display: flex;
+  width: 99%;
+  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
   align-items: center;
   justify-content: left;
-  flex-direction: row;
+  flex-direction: column;
+  flex-wrap: nowrap;
 }
-
-.flex-menu {
+div.category-list div.category div.category-header {
+  max-height: 50px;
   display: flex;
-  width: 97%;
-  height: 97%;
+  width: 99%;
+  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
   align-items: center;
   justify-content: space-between;
   flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+div.product-list {
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: left;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 200px;
+  overflow-x: auto;
+}
+div.product-list div.product {
+  height: 150px;
+  width: 150px;
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
   flex-wrap: nowrap;
 }
 

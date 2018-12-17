@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"fel",
+				"flex-column-top"
+			],
+			[
+				"f",
+				"flex-menu"
+			],
+			[
+				"l",
+				"li\tTag"
+			],
+			[
+				"in",
+				"input\tTag"
+			],
+			[
 				"HTML",
 				"htmlid_seq"
 			],
@@ -498,32 +514,16 @@
 			[
 				"fecha",
 				"fechafin"
-			],
-			[
-				"Estado",
-				"EstadoConciliacion"
-			],
-			[
-				"tel",
-				"telefonoAux"
-			],
-			[
-				"COL",
-				"COLUMN"
-			],
-			[
-				"cant",
-				"cantfacturados"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "index.html",
+			"file": "store.html",
 			"settings":
 			{
-				"buffer_size": 91,
+				"buffer_size": 1380,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -532,10 +532,20 @@
 			"file": "style.scss",
 			"settings":
 			{
-				"buffer_size": 19,
+				"buffer_size": 1987,
 				"encoding": "UTF-8",
 				"line_ending": "Unix",
 				"name": "@background:white"
+			}
+		},
+		{
+			"file": "useful.scss",
+			"settings":
+			{
+				"buffer_size": 866,
+				"encoding": "UTF-8",
+				"line_ending": "Unix",
+				"name": "/* useful sass functions */"
 			}
 		}
 	],
@@ -570,8 +580,17 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/Datos/chile/ecommerce/design"
+	],
 	"file_history":
 	[
+		"/Datos/chile/ecommerce/design/ecommerce.sublime-project",
+		"/Datos/chile/ecommerce/design/store-create.html",
+		"/Datos/chile/ecommerce/README.md",
+		"/Datos/chile/ecommerce/design/style.css",
+		"/Datos/chile/ecommerce/design/index.html",
 		"/Datos/EnlaceTecnologico/lg/trunk/production/server-update/updatedb.sql",
 		"/Datos/EnlaceTecnologico/lg/trunk/sql/initialdata.sql",
 		"/home/jjperez89/tareas-importar-fe.txt",
@@ -694,16 +713,11 @@
 		"/Datos/srv/html/src/preload/contabilidad/exportar.php",
 		"/Datos/srv/html/src/preload/contabilidad/diferido_lista.php",
 		"/Datos/srv/html/src/preload/contabilidad/diferido.php",
-		"/Datos/srv/html/src/preload/contabilidad/declaracion_nueva.php",
-		"/Datos/srv/html/src/preload/contabilidad/declaracion_lista.php",
-		"/Datos/srv/html/src/preload/contabilidad/declaracion.php",
-		"/Datos/srv/html/src/preload/contabilidad/cuenta_lista.php",
-		"/Datos/srv/html/src/preload/contabilidad/cuadre.php",
-		"/Datos/srv/html/src/preload/contabilidad/conciliacion.php"
+		"/Datos/srv/html/src/preload/contabilidad/declaracion_nueva.php"
 	],
 	"find":
 	{
-		"height": 33.0
+		"height": 46.0
 	},
 	"find_in_files":
 	{
@@ -718,6 +732,9 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"separa",
+			"center",
+			"menu",
 			"333",
 			"596",
 			"665",
@@ -842,10 +859,7 @@
 			"1586",
 			"fewsconfig",
 			"feconfig",
-			"feEstadoPruebas",
-			"FE4-716",
-			"FE4-416",
-			"FE3-916"
+			"feEstadoPruebas"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -891,35 +905,36 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "index.html",
+					"file": "store.html",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 91,
+						"buffer_size": 1380,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								36,
-								36
+								1323,
+								1323
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/HTML/HTML.sublime-syntax"
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1114.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -928,15 +943,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 19,
+						"buffer_size": 1987,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								19,
-								19
+								1964,
+								1964
 							]
 						],
 						"settings":
@@ -945,10 +960,39 @@
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
+						"translation.y": 2576.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "useful.scss",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 866,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								35,
+								48
+							]
+						],
+						"settings":
+						{
+							"auto_name": "/* useful sass functions */",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
@@ -1002,6 +1046,14 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"cre",
+				"store-create.html"
+			],
+			[
+				"sot",
+				"store-create.html"
+			],
 			[
 				"lg",
 				"sql/lg-postgres.sql"
@@ -1505,35 +1557,35 @@
 			[
 				"upd",
 				"server-update/updatedb.sql"
-			],
-			[
-				"serv",
-				"src/serviceworker.php"
-			],
-			[
-				"sopor",
-				"sql/soporte.sql"
 			]
 		],
 		"width": 0.0
 	},
 	"select_project":
 	{
-		"height": 0.0,
+		"height": 500.0,
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"",
+				"~/lg.sublime-project"
+			]
 		],
-		"width": 0.0
+		"width": 380.0
 	},
 	"select_symbol":
 	{
-		"height": 0.0,
+		"height": 304.0,
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"",
+				"footer"
+			]
 		],
-		"width": 0.0
+		"width": 392.0
 	},
 	"selected_group": 0,
 	"settings":

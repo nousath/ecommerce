@@ -1,4 +1,5 @@
-/* colors and general parametrs for all css */
+@import 'useful';
+/* colors and general parameters for all css */
 
 $font:Arial;
 $font-size:18px;
@@ -7,36 +8,11 @@ $link-color:#053e7b;
 $header-color:#053e7b;
 $footer-color:#e9ebee;
 $bar-height:8%;
+$order-color:#e9ebee;
 
 /* img size */
 $icon-size:40px;
 $products-size:30%;
-
-/* useful functions */
-@mixin border-radius($radius) {
- -webkit-border-radius: $radius;
- -moz-border-radius: $radius;
- -ms-border-radius: $radius;
- border-radius: $radius;
-}
-@mixin border-color($color,$width) {
-  border-style:solid;
-  border-color:$color;
-  border-width:$width;
-}
-@mixin separate-elements() {
-  padding:3px;
-  margin:6px;
-}
-@mixin center(){
-  text-align:center;
-  align-items:center;
-}
-@mixin no-border-padding(){
-	border:0px;
-	padding:0px;
-	margin:0px;
-}
 
 /* general */
 * {
@@ -70,9 +46,31 @@ button{
 	@include border-color($header-color, 6px);
 }
 
+/* containers flex-box */
+.flex-column-center{
+	@include flex(center,center,column);
+}
+
+.flex-column-top{
+	@include flex(center,flex-start,column);
+}
+
+.flex-column-left{
+	@include flex(left,flex-start,column);
+}
+
+.flex-row-top{
+	@include flex(center,flex-start,row,nowrap);
+}
+
+.flex-row{
+	@include flex(center,left,row);
+}
+
 /* top bar with title, menus, etc */
 div.header{
-	position:absolute;
+	position:fixed;
+	z-index:2;
 	background-color:$header-color;
 	width:100%;
 	height:$bar-height;
@@ -82,8 +80,12 @@ div.header{
 	span, p, li, h1{
 		color:white;
 	}
-	.menu {
-		@include separate-elements();
+	.menu{
+		@include flex(center,space-between,row,nowrap);
+	}
+	.menu-icons {
+		@extend .flex-row;
+		@include separate-elements(2);
 		img {
 			width:$icon-size;
 			padding-left:10px;
@@ -98,9 +100,6 @@ div.content{
 	left:0px;
 	width:100%;
 	padding-top:2px;
-	* {
-		@include separate-elements();
-	}
 }
 
 /* for some pages like chat, shopping bar, bar with options */
@@ -114,41 +113,65 @@ div.footer{
 	@include no-border-padding();
 }
 
-/* containers flex-box */
-@mixin flex($align:null, $justify:null, $direction:null, $wrap:null, $height:null){
-	display:flex;
-	width:97%;
-	height:97%;
-	@include no-border-padding();
-	@if $align{
-		align-items: $align;
-	}
-	@if $justify{
-		justify-content: $justify;
-	}
-	@if $height{
-		height: $height;
-	}
-	@if $direction{
-		flex-direction:$direction;
-	}
-	@if $wrap{
-		flex-wrap:$wrap;
+/* main pages */
+.store-create{
+	@extend .flex-column-center;
+	* {
+		@include separate-elements(2);
 	}
 }
 
-.flex-column-center{
-	@include flex(center,center,column);
+.store-main{
+	@extend .flex-column-top;
+	* {
+		@include separate-elements(1);
+	}
 }
 
-.flex-column-top{
-	@include flex(center,flex-start,column);
+/* main class: orders products etc */
+div.order{
+	@extend .flex-column-top;
+	background-color:$order-color;
+	@include border-radius(15px);
+	min-height:80px;
+	max-height:150px;
+	padding:5px;
+	.order-header{
+		@include flex(center,flex-start,row,nowrap);
+		max-height:40px;
+		p, span {
+			white-space:nowrap;
+		}
+	}
+	.order-product-list{
+		@extend .flex-column-left;
+		overflow-y:auto;
+		* { 
+			padding:0px !important;
+			margin:2px !important;
+		}
+	}
 }
 
-.flex-row{
-	@include flex(center, left,row);
+div.category-list{
+	@include flex(left,flex-start,row,wrap);	
+	div.category{
+		max-height:300px;
+		@include flex(center,left,column,nowrap);
+		div.category-header{
+			max-height:50px;
+			@include flex(center,space-between,row,nowrap);
+		}
+	}
 }
 
-.flex-menu{
-	@include flex(center,space-between,row,nowrap);
+div.product-list{
+	@include flex(left,flex-start,column,wrap);
+	max-height:200px;
+	overflow-x:auto;
+	div.product{
+		height:150px;
+		width:150px;
+		@include flex(center,flex-start,column,nowrap);
+	}
 }
