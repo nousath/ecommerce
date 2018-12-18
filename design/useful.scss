@@ -25,7 +25,7 @@
 }
 
 /* containers flex-box */
-@mixin flex($align:null, $justify:null, $direction:null, $wrap:null, $useallspace:true){
+@mixin flex($direction:null, $wrap:null, $useallspace:true, $align:null, $justify:null){
 	display:flex;
 	@if $useallspace == true {
 		width:99%;
@@ -34,6 +34,7 @@
 	@include no-border-padding();
 	@if $align{
 		align-items: $align;
+		align-content: $align;
 	}
 	@if $justify{
 		justify-content: $justify;

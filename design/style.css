@@ -67,6 +67,7 @@ div.header .menu {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: space-between;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -77,6 +78,7 @@ div.header .menu-icons {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: left;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -111,7 +113,7 @@ div.footer {
 }
 
 /* main pages */
-.store-create {
+.page-create {
   display: flex;
   width: 99%;
   height: 99%;
@@ -119,15 +121,17 @@ div.footer {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: center;
   flex-direction: column;
+  flex-wrap: nowrap;
 }
-.store-create * {
+.page-create * {
   padding: 4px;
   margin: 6px;
 }
 
-.store-main {
+.page-main {
   display: flex;
   width: 99%;
   height: 99%;
@@ -135,21 +139,89 @@ div.footer {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: flex-start;
   flex-direction: column;
+  flex-wrap: nowrap;
 }
 @media (min-width: 600px) {
-  .store-main {
+  .page-main {
     width: 100%;
   }
-  .store-main li {
+  .page-main li {
     width: 100%;
   }
-  .store-main .store-description {
+  .page-main .store-description {
     text-align: center;
   }
 }
 
+.page-chat {
+  /* containers */
+  display: flex;
+  width: 99%;
+  height: 99%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  /* chats */
+}
+.page-chat div.chat-messages, .page-chat div.chat-suggestions {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: left;
+  align-content: left;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+.page-chat div.chat-messages *, .page-chat div.chat-suggestions * {
+  padding: 6px;
+  margin: 9px;
+}
+.page-chat div.chat-suggestions {
+  margin-top: 200px;
+  background-color: #e9ebee;
+}
+.page-chat div.chat-text {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+  background-color: #e9ebee;
+}
+.page-chat div.chat-text * {
+  padding: 4px;
+  margin: 6px;
+}
+.page-chat .chat-message, .page-chat .chat-response, .page-chat .chat-suggest, .page-chat .chat-request {
+  padding: 4px;
+  margin: 6px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  width: 95%;
+}
+.page-chat .chat-request {
+  background-color: lightblue;
+  text-align: left;
+}
+.page-chat .chat-response, .page-chat .chat-suggest {
+  background-color: lightgreen;
+  text-align: right;
+}
 @media (min-width: 600px) {
   .search {
     width: 150px;
@@ -163,6 +235,7 @@ div.order {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: flex-start;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -181,6 +254,7 @@ div.order .order-header {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: flex-start;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -194,6 +268,7 @@ div.order .order-product-list {
   padding: 0px;
   margin: 0px;
   align-items: left;
+  align-content: left;
   justify-content: flex-start;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -215,6 +290,7 @@ div.category-list {
   padding: 0px;
   margin: 0px;
   align-items: left;
+  align-content: left;
   justify-content: flex-start;
   flex-direction: row;
   flex-wrap: wrap;
@@ -231,6 +307,7 @@ div.category-list div.category {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: left;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -243,6 +320,7 @@ div.category-list div.category div.category-header {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: left;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -253,6 +331,8 @@ div.category-list div.category div.category-header {
 
 div.product-list {
   width: 100%;
+  /* desktop show categories and products */
+  /* mobile just products */
 }
 @media (min-width: 600px) {
   div.product-list {
@@ -261,11 +341,12 @@ div.product-list {
     padding: 0px;
     margin: 0px;
     align-items: left;
+    align-content: left;
     justify-content: space-around;
     flex-direction: column;
     flex-wrap: wrap;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 @media (max-width: 599px) {
@@ -275,17 +356,17 @@ div.product-list {
     padding: 0px;
     margin: 0px;
     align-items: left;
+    align-content: left;
     justify-content: space-around;
     flex-direction: row;
     flex-wrap: wrap;
-    width: 100%;
   }
 }
 div.product-list div.product {
-  max-height: 200px;
-  max-width: 200px;
   min-width: 150px;
+  max-width: 200px;
   min-height: 150px;
+  max-height: 200px;
   border-width: 2px;
   border-color: #e9ebee;
   border-style: solid;
@@ -294,6 +375,7 @@ div.product-list div.product {
   padding: 0px;
   margin: 0px;
   align-items: center;
+  align-content: center;
   justify-content: flex-start;
   flex-direction: column;
   flex-wrap: nowrap;

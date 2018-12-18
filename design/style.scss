@@ -11,6 +11,8 @@ $bar-height:8%;
 $order-color:#e9ebee;
 $border-color:#e9ebee;
 $mobile-size:600px;
+$chat-request-color:lightblue;
+$chat-response-color:lightgreen;
 
 /* img size */
 $icon-size:40px;
@@ -66,10 +68,10 @@ div.header{
 		padding-left:5px;
 	}
 	.menu{
-		@include flex(center,space-between,row,nowrap,true);
+		@include flex(row,nowrap,true,center,space-between);
 	}
 	.menu-icons {
-		@include flex(center,left,row,nowrap,false);
+		@include flex(row,nowrap,false,center,left);
 		@include separate-elements(2);
 		img {
 			width:$icon-size;
@@ -99,14 +101,14 @@ div.footer{
 }
 
 /* main pages */
-.store-create{
-	@include flex(center,center,column);
+.page-create{
+	@include flex(column,nowrap,true,center,center);
 	* {
 		@include separate-elements(2);
 	}
 }
 
-.store-main{
+.page-main{
 	@media (min-width:$mobile-size) {
 		width:100%;
 		li {
@@ -116,7 +118,51 @@ div.footer{
 			text-align:center;
 		}
 	}
-	@include flex(center,flex-start,column);
+	@include flex(column,nowrap,true,center,flex-start);
+}
+
+.page-chat{
+	/* containers */
+	@include flex(column,nowrap,true);
+	div.chat-messages{
+		@include flex(column,nowrap,false,left,center);
+		width:100%;
+		* {
+			@include separate-elements(3);
+		}
+	}
+	div.chat-suggestions{
+		@extend .chat-messages;
+		margin-top:200px;
+		background-color:$footer-color;
+	}
+	div.chat-text{
+		@include flex(row,nowrap,false,center,center);
+		width:100%;
+		* {
+			@include separate-elements(2);
+		}
+		background-color:$footer-color;
+	}
+	/* chats */
+	.chat-message{
+		@include separate-elements(2);
+		@include border-radius(5px);
+		width:95%;
+	}
+	.chat-request{
+		@extend .chat-message;
+		background-color:$chat-request-color;
+		text-align:left;
+	}
+	.chat-response{
+		@extend .chat-message;
+		background-color:$chat-response-color;
+		text-align:right;
+	}
+	.chat-suggest{
+		@extend .chat-response
+	}
 }
 
 .search{
@@ -127,20 +173,20 @@ div.footer{
 
 /* main class: orders products etc */
 div.order{
-	@include flex(center,flex-start,column,nowrap,false);
+	@include flex(column,nowrap,false,center,flex-start);
 	background-color:$order-color;
 	@include border-radius(15px);
 	min-height:80px;
 	max-height:150px;
 	padding:5px;
 	.order-header{
-		@include flex(center,flex-start,row,nowrap,false);
+		@include flex(row,nowrap,false,center,flex-start);
 		p, span {
 			white-space:nowrap;
 		}
 	}
 	.order-product-list{
-		@include flex(left,flex-start,column,nowrap,false);
+		@include flex(column,nowrap,false,left,flex-start);
 		overflow-y:auto;
 		width:100%;
 		* { 
@@ -154,18 +200,18 @@ div.order{
 }
 
 div.category-list{
-	@include flex(left,flex-start,row,wrap,false);
+	@include flex(row,wrap,false,left,flex-start);
 	width:100%;
 	* {
 		@include separate-elements(1);
 	}
 	div.category{
 		max-height:250px;
-		@include flex(center,left,column,nowrap,false);
+		@include flex(column,nowrap,false,center,left);
 		width:100%;
 		padding:8px;
 		div.category-header{
-			@include flex(center,left,row,nowrap,false);
+			@include flex(row,nowrap,false,center,left);
 			width:100%;
 			height:300px;
 			padding-left:15px;
@@ -175,20 +221,21 @@ div.category-list{
 
 div.product-list{
 	width:100%;
+	/* desktop show categories and products */
 	@media (min-width:$mobile-size){
-		@include flex(left,space-around,column,wrap,false);
-		overflow-x:auto;
-		overflow-y:hidden;
+		@include flex(column,wrap,false,left,space-around);
+		overflow-y:auto;
+		overflow-x:hidden;
 	}
+	/* mobile just products */
 	@media (max-width:$mobile-size - 1){
-		@include flex(left,space-around,row,wrap,false);
-		width:100%;
+		@include flex(row,wrap,false,left,space-around);
 	}
 	div.product{
-		max-height:200px;
-		max-width:200px;
 		min-width:150px;
+		max-width:200px;
 		min-height:150px;
+		max-height:200px;
 		border-width:2px;
 		border-color:$border-color;
 		border-style:solid;
@@ -196,6 +243,6 @@ div.product-list{
 			padding:5px;
 			margin:8px;
 		}
-		@include flex(center,flex-start,column,nowrap,false);
+		@include flex(column,nowrap,false,center,flex-start);
 	}
 }
