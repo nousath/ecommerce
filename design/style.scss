@@ -2,7 +2,7 @@
 /* colors and general parameters for all css */
 
 $font:Arial;
-$font-size:18px;
+$font-size:20px;
 $text-color:#666666;
 $link-color:#053e7b;
 $header-color:#053e7b;
@@ -48,6 +48,22 @@ button{
 		font-size:125%;
 	}
 	@include border-color($header-color, 6px);
+}
+
+input, select, textarea {
+    @include border-color($border-color,3px);
+    @include border-radius(6px);
+}
+
+select{
+	-webkit-appearance: none;
+    background: url(img/flecha-abajo-small.png) no-repeat right;
+    min-width: 30px;
+    cursor: pointer;
+}
+
+.price{
+	font-weight:bold;
 }
 
 /* top bar with title, menus, etc */
@@ -109,16 +125,7 @@ div.footer{
 }
 
 .page-main{
-	@media (min-width:$mobile-size) {
-		width:100%;
-		li {
-			width:100%;
-		}
-		.store-description{
-			text-align:center;
-		}
-	}
-	@include flex(column,nowrap,true,center,flex-start);
+	@include flex(column,nowrap,false,center,flex-start);
 }
 
 .page-chat{
@@ -133,7 +140,7 @@ div.footer{
 	}
 	div.chat-suggestions{
 		@extend .chat-messages;
-		margin-top:200px;
+		margin-top:100px;
 		background-color:$footer-color;
 	}
 	div.chat-text{
@@ -162,6 +169,55 @@ div.footer{
 	}
 	.chat-suggest{
 		@extend .chat-response
+	}
+}
+
+.page-cart{
+	@include flex(column,nowrap,true);
+	div.cart-products{
+		@include flex(column,nowrap,false,center,center);
+		width:100%;
+		* {
+			@include separate-elements(3);
+		}
+	}
+	div.order-info{
+		@include flex(column,nowrap,false,center,center);
+		width:90%;
+		* {
+			@include separate-elements(1);
+		}
+	}
+	div.product{
+		@include flex(row,nowrap,false,center,center);
+		.price{
+			position:relative;
+			right:2px;
+		}
+		.quantity-options{
+			@include flex(row,nowrap,false,center,center);
+			@include no-border-padding();
+			* {
+				padding-left:5px !important;
+				padding-top:0px !important;
+				padding-right:0px !important;
+				padding-bottom:0px !important;
+				margin:0px !important;
+			}
+			img {
+				width:20px;
+			}
+		}
+	}
+	div.order-total{
+		text-align:right;
+	}
+	div.cart-options{
+		@extend .footer;
+		@include flex(row,nowrap,false,center,center);
+		button{
+			@include separate-elements(2);
+		}
 	}
 }
 
@@ -220,7 +276,6 @@ div.category-list{
 }
 
 div.product-list{
-	width:100%;
 	/* desktop show categories and products */
 	@media (min-width:$mobile-size){
 		@include flex(column,wrap,false,left,space-around);

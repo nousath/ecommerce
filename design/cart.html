@@ -1,0 +1,71 @@
+<html>
+	<head>
+		<title>Shopping cart</title>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<link href='style.css' rel='stylesheet' type='text/css'>
+	</head>
+	<body>
+		<div class="header">
+			<div class="menu">
+				<a href="store.html"><h1 class="breadcumbs">Store Name > Cart</h1></a>
+				<ul class="menu-icons">
+					<li title="Chat with the store"><a href="chat.html"><img src="img/chat.png" /></a></li>
+					<li title="Shopping cart"><a href="store.html"><img src="img/cart_selected.png" /></a></li>
+					<li title="Options and settings"><img src="img/config.png" /></li>
+				</ul>
+			</div>
+		</div>
+		<div class="content">
+			<div class="page-cart">
+				<div class="cart-products">
+					<div class="product">
+						<span>Product X</span>
+						<span class="quantity-options">
+							<img src="img/up.png"/>
+							<span class="quantity">2</span>
+							<img src="img/down.png"/>
+						</span>
+						<span class="price">$20.000</span>
+					</div>
+					<div class="product">
+						<span>Product Y</span>
+						<span class="quantity-options">
+							<img src="img/up.png"/>
+							<span class="quantity">1</span>
+							<img src="img/down.png"/>
+						</span>
+						<span class="price">$30.000</span>
+					</div>
+					<div class="order-total">
+						<span class="price">$70.000</span>
+					</div>
+					<div class="order-info">
+						<textarea placeholder="Comments or additional request"></textarea>
+						<span>
+							<span>Payment method</span>
+							<select>
+								<option></option>
+								<option>Cash</option>
+								<option>Credit card</option>
+								<option>Paypal</option>
+							</select>
+						</span>
+						<span>
+							<span>Delivery</span>
+							<select>
+								<option></option>
+								<option>Click and Collect</option>
+								<option>Delivery</option>
+								<option>Uber eats</option>
+							</select>
+						</span>
+					</div>
+				</div>
+				<div class="cart-options">
+					<button><a href="store.html"><span>Continuar comprando</span></a></button>
+					<button><span>Enviar pedido</span></button>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

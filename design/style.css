@@ -6,7 +6,7 @@
 * {
   font-family: Arial;
   color: #666666;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 a, a > p, a > span {
@@ -39,6 +39,27 @@ button span, button p {
   font-size: 125%;
 }
 
+input, select, textarea {
+  border-style: solid;
+  border-color: #e9ebee;
+  border-width: 3px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  border-radius: 6px;
+}
+
+select {
+  -webkit-appearance: none;
+  background: url(img/flecha-abajo-small.png) no-repeat right;
+  min-width: 30px;
+  cursor: pointer;
+}
+
+.price {
+  font-weight: bold;
+}
+
 /* top bar with title, menus, etc */
 div.header {
   position: fixed;
@@ -61,8 +82,8 @@ div.header h1 {
 }
 div.header .menu {
   display: flex;
-  width: 99%;
-  height: 99%;
+  width: 100%;
+  height: 100%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -100,7 +121,7 @@ div.content {
 }
 
 /* for some pages like chat, shopping bar, bar with options */
-div.footer {
+div.footer, .page-cart div.cart-options {
   background-color: #e9ebee;
   width: 100%;
   min-height: 8%;
@@ -115,8 +136,8 @@ div.footer {
 /* main pages */
 .page-create {
   display: flex;
-  width: 99%;
-  height: 99%;
+  width: 100%;
+  height: 100%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -133,8 +154,6 @@ div.footer {
 
 .page-main {
   display: flex;
-  width: 99%;
-  height: 99%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -144,23 +163,12 @@ div.footer {
   flex-direction: column;
   flex-wrap: nowrap;
 }
-@media (min-width: 600px) {
-  .page-main {
-    width: 100%;
-  }
-  .page-main li {
-    width: 100%;
-  }
-  .page-main .store-description {
-    text-align: center;
-  }
-}
 
 .page-chat {
   /* containers */
   display: flex;
-  width: 99%;
-  height: 99%;
+  width: 100%;
+  height: 100%;
   border: 0px;
   padding: 0px;
   margin: 0px;
@@ -185,7 +193,7 @@ div.footer {
   margin: 9px;
 }
 .page-chat div.chat-suggestions {
-  margin-top: 200px;
+  margin-top: 100px;
   background-color: #e9ebee;
 }
 .page-chat div.chat-text {
@@ -222,6 +230,106 @@ div.footer {
   background-color: lightgreen;
   text-align: right;
 }
+.page-cart {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+.page-cart div.cart-products {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+.page-cart div.cart-products * {
+  padding: 6px;
+  margin: 9px;
+}
+.page-cart div.order-info {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 90%;
+}
+.page-cart div.order-info * {
+  padding: 2px;
+  margin: 3px;
+}
+.page-cart div.product {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.page-cart div.product .price {
+  position: relative;
+  right: 2px;
+}
+.page-cart div.product .quantity-options {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+}
+.page-cart div.product .quantity-options * {
+  padding-left: 5px !important;
+  padding-top: 0px !important;
+  padding-right: 0px !important;
+  padding-bottom: 0px !important;
+  margin: 0px !important;
+}
+.page-cart div.product .quantity-options img {
+  width: 20px;
+}
+.page-cart div.order-total {
+  text-align: right;
+}
+.page-cart div.cart-options {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.page-cart div.cart-options button {
+  padding: 4px;
+  margin: 6px;
+}
+
 @media (min-width: 600px) {
   .search {
     width: 150px;
@@ -330,7 +438,6 @@ div.category-list div.category div.category-header {
 }
 
 div.product-list {
-  width: 100%;
   /* desktop show categories and products */
   /* mobile just products */
 }
