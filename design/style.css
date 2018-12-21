@@ -60,6 +60,12 @@ select {
   font-weight: bold;
 }
 
+p.config-title {
+  border-bottom: 3px solid #e9ebee;
+  width: 100%;
+  text-align: center;
+}
+
 /* top bar with title, menus, etc */
 div.header {
   position: fixed;
@@ -73,7 +79,7 @@ div.header {
   padding: 0px;
   margin: 0px;
 }
-div.header span, div.header p, div.header li, div.header h1 {
+div.header span, div.header p, div.header li, div.header h1, div.header a {
   color: white;
 }
 div.header h1 {
@@ -342,9 +348,6 @@ div.footer, .page-cart div.cart-options {
   flex-wrap: nowrap;
   width: 100%;
 }
-.page-config p {
-  border-bottom: 3px solid #e9ebee;
-}
 .page-config button {
   max-width: 60%;
   align-self: center;
@@ -355,6 +358,50 @@ div.footer, .page-cart div.cart-options {
 .page-config table.store-options input {
   padding: 2px;
   margin: 3px;
+}
+
+.page-config-products {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+.page-config-products .config-products {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 80%;
+}
+.page-config-products * {
+  padding: 2px;
+  margin: 3px;
+}
+.page-config-products .products-options {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+.page-config-products img.product-feature {
+  width: 40px;
 }
 
 @media (min-width: 600px) {

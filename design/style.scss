@@ -8,8 +8,8 @@ $link-color:#053e7b;
 $header-color:#053e7b;
 $footer-color:#e9ebee;
 $bar-height:8%;
-$order-color:#e9ebee;
-$border-color:#e9ebee;
+$order-color:$footer-color;
+$border-color:$footer-color;
 $mobile-size:600px;
 $chat-request-color:lightblue;
 $chat-response-color:lightgreen;
@@ -37,7 +37,7 @@ ul {
 
 h1{
 	font-size:125%;
-	font-weight:bold;	
+	font-weight:bold;
 }
 
 button{
@@ -66,6 +66,12 @@ select{
 	font-weight:bold;
 }
 
+p.config-title {
+	border-bottom: 3px solid #e9ebee;
+	width:100%;
+	text-align:center;
+}
+
 /* top bar with title, menus, etc */
 div.header{
 	position:fixed;
@@ -76,7 +82,7 @@ div.header{
 	top:0px;
 	left:0px;
 	@include no-border-padding();
-	span, p, li, h1{
+	span, p, li, h1, a{
 		color:white;
 	}
 	h1{
@@ -224,9 +230,6 @@ div.footer{
 .page-config{
 	@include flex(column,nowrap,false,left,flex-start);
 	width:100%;
-	p {
-		border-bottom: 3px solid #e9ebee;
-	}
 	button {
 		max-width:60%;
 		align-self:center;
@@ -236,6 +239,25 @@ div.footer{
 	}
 	table.store-options input{
 		@include separate-elements(1);
+	}
+}
+
+.page-config-products{
+	@include flex(row,nowrap,false,center,center);
+	width:100%;
+	.config-products{
+		@include flex(column,nowrap,false,center,center);
+		width:80%;
+	}
+	* {
+		@include separate-elements(1);
+	}
+	.products-options{
+		@include flex(row,nowrap,false,center,center);
+		width:100%;
+	}
+	img.product-feature{
+		width:40px;
 	}
 }
 

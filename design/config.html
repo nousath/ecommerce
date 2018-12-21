@@ -18,14 +18,18 @@
 		<div class="content">
 			<div class="page-config">
 				<br/>
-				<button><span>Products</span></button>
+				<button><a href="config-products.html"><span>Products</span></a></button>
 				<br/>
 				<button><span>Invite users to the store</span></button>
-				<p>Store info</p>
+				<p class="config-title">Store info</p>
 				<table>
 					<tr>
 						<td>Store Name</td>
 						<td><input type="text" /></td>
+					</tr>
+					<tr>
+						<td>Store Logo</td>
+						<td><input type="file" /></td>
 					</tr>
 					<tr>
 						<td>Short description</td>
@@ -37,8 +41,18 @@
 					</tr>
 					!-->
 				</table>
-				<p>Store options</p>
+				<p class="config-title">Store options</p>
 				<table class="store-options">
+					<tr>
+						<td>Category products</td>
+						<td>
+							<ul>
+								<li><input type="text" value="Category1" /></li>
+								<li><input type="text" value="Category2" /></li>
+								<li><a>Agregar</a></li>
+							</ul>
+						</td>
+					</tr>
 					<tr>
 						<td>Payment methods</td>
 						<td>
@@ -62,13 +76,32 @@
 						</td>
 					</tr>
 				</table>
-				<p>Chat quickly answer</p>
+				<p class="config-title">Chat quickly answer</p>
 				<ul>
 					<li><textarea>Hello, how can i help you</textarea></li>
 					<li><textarea>Thanks for contact us</textarea></li>
 					<li><a>Agregar</a></li>
 				</ul>
-				<p>Admin user</p>
+				<p class="config-title">Store colors</p>
+				<table>
+					<tr>
+						<td>Header and buttons color</td>
+						<td><input type="text" /></td>
+					</tr>
+					<tr>
+						<td>Footer and border color</td>
+						<td><input type="text" /></td>
+					</tr>
+					<tr>
+						<td>Text color</td>
+						<td><input type="text" /></td>
+					</tr>
+					<tr>
+						<td>Link color</td>
+						<td><input type="text"  /></td>
+					</tr>
+				</table>
+				<p class="config-title">Admin user</p>
 				<table>
 					<tr>
 						<td>Email</td>
@@ -80,7 +113,7 @@
 					</tr>
 				</table>
 				<!-- feature for 2.0
-				<p>Store attendants</p>
+				<p class="config-title">Store attendants</p>
 				<table>
 					<thead>
 						<tr>
