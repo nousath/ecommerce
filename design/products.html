@@ -7,7 +7,7 @@
 	<body>
 		<div class="header">
 			<div class="menu">
-				<h1 class="breadcumbs"><a href="store.html">Store Name</a><a href="config.html"> > Config</a><a href="config-products.html"> > Products</h1></a>
+				<h1 class="breadcumbs"><a href="store.html">Store Name</a><a href="config.html"> > Config</a><a href="products.html"> > Products</h1></a>
 				<ul class="menu-icons">
 					<li title="Chat with the store"><a href="chat.html"><img src="img/chat.png" /></a></li>
 					<li title="Shopping cart"><a href="cart.html"><img src="img/cart.png" /></a></li>
@@ -19,15 +19,23 @@
 			<div class="page-config-products">
 				<img src="img/left.png" title="Previous product" />
 				<div class="config-products">
+					<ul class="flex-row">
+						<li><span>Edit product</span></li>
+						<li><input type="text" placeholder="Busqueda" /></li>
+					</ul>
+					<!--
+						if there a few product, list it, order by category
+					!-->
+					<br/>
 					<img src="products/car-parts1.jpg" />
 					<a>Change image</a>
 					<input type="text" value="Product1" placeholder="Name">
 					<input type="text" value="$20000" placeholder="Price">
-					<ul class="products-options">
+					<ul class="flex-row">
 						<li><span>Feature product</span></li>
 						<li><img src="img/starred.png" class="product-feature" /></li>
 					</ul>
-					<ul class="products-options">
+					<ul class="flex-row">
 						<li><span>Category</span></li>
 						<li><select>
 							<option></option>
@@ -37,19 +45,15 @@
 						</select></li>
 					</ul>
 					<textarea placeholder="Description"></textarea>
-					<ul class="products-options">
+					<ul class="flex-row">
 						<li><a>Mark not available</a></li>
 						<li><a>Delete</a></li>
 					</ul>
-					<br/>
-					<br/>
-					<p class="config-title">Edit other product</p>
-					<input type="text" placeholder="Busqueda" />
-					<!--
-						if there a few product, list it, order by category
-					!-->
 				</div>
 				<img src="img/right.png" title="Next product" />
+			</div>
+			<div class="product-new">
+				<img src="img/add.png" title="New Product" />
 			</div>
 		</div>
 	</body>

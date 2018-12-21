@@ -66,10 +66,27 @@ select{
 	font-weight:bold;
 }
 
-p.config-title {
+.title {
 	border-bottom: 3px solid #e9ebee;
 	width:100%;
 	text-align:center;
+}
+
+/**
+show two li in a row
+*/
+ul.flex-row{
+	@include flex(row,nowrap,false,center,center);
+	width:100%;
+}
+
+div.product-new{
+	position:absolute;
+	bottom:30px;
+	right:30px;
+	img {
+		width:50px;
+	}
 }
 
 /* top bar with title, menus, etc */
@@ -252,12 +269,24 @@ div.footer{
 	* {
 		@include separate-elements(1);
 	}
-	.products-options{
-		@include flex(row,nowrap,false,center,center);
-		width:100%;
-	}
 	img.product-feature{
 		width:40px;
+	}
+}
+
+.page-invite{
+	@include flex(column,nowrap,false,center,center);
+	width:100%;
+	p{
+		text-align:center;
+	}
+	.invite-social{
+		@include flex(row,wrap,false,center,center);
+		width:100%;
+		img{
+			width:64px;
+			padding:5px;
+		}
 	}
 }
 
