@@ -330,6 +330,33 @@ div.footer, .page-cart div.cart-options {
   margin: 6px;
 }
 
+.page-config {
+  display: flex;
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  align-items: left;
+  align-content: left;
+  justify-content: flex-start;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+.page-config p {
+  border-bottom: 3px solid #e9ebee;
+}
+.page-config button {
+  max-width: 60%;
+  align-self: center;
+}
+.page-config table.store-options td {
+  vertical-align: top;
+}
+.page-config table.store-options input {
+  padding: 2px;
+  margin: 3px;
+}
+
 @media (min-width: 600px) {
   .search {
     width: 150px;

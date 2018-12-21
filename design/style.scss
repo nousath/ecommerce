@@ -221,6 +221,24 @@ div.footer{
 	}
 }
 
+.page-config{
+	@include flex(column,nowrap,false,left,flex-start);
+	width:100%;
+	p {
+		border-bottom: 3px solid #e9ebee;
+	}
+	button {
+		max-width:60%;
+		align-self:center;
+	}
+	table.store-options td{
+		vertical-align:top;
+	}
+	table.store-options input{
+		@include separate-elements(1);
+	}
+}
+
 .search{
 	@media (min-width:$mobile-size) {
 		width:150px
