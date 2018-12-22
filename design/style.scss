@@ -25,6 +25,11 @@ $products-size:30%;
     font-size:$font-size;
 }
 
+body{
+	margin:0px;
+	padding:0px;
+}
+
 a , a > p, a > span {
 	color:$link-color;
 	text-decoration: none;

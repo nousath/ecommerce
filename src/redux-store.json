@@ -1,0 +1,238 @@
+{
+	products:{
+		1:{
+			id:1,
+			name:"Product X",
+			img:"products/car-parts1.jpg",
+			price:20000,
+			description:"",
+			available:true,
+			feature:false,
+			category:1
+		},
+		2:{
+			id:2,
+			name:"Product Y",
+			img:"products/car-parts2.jpg",
+			price:30000,
+			description:"test description",
+			available:true,
+			feature:true,
+			category:1
+		},
+		3:{
+			id:3,
+			name:"Product Z",
+			img:"products/car-parts3.jpg",
+			price:31000,
+			description:"",
+			available:true,
+			feature:false,
+			category:1
+		},
+		4:{
+			id:4,
+			name:"Product A",
+			img:"products/car-parts4.jpg",
+			price:21000,
+			description:"",
+			available:false,
+			feature:false,
+			category:2
+		},
+		5:{
+			id:5,
+			name:"Product B",
+			img:"products/car-parts5.jpg",
+			price:11000,
+			description:"",
+			available:false,
+			feature:false,
+			category:1
+		},
+		6:{
+			id:6,
+			name:"Product C",
+			img:"products/car-parts6.jpg",
+			price:12000,
+			description:"",
+			available:false,
+			feature:false,
+			category:1
+		},
+		7:{
+			id:7,
+			name:"Product D",
+			img:"products/car-parts7.jpg",
+			price:14000,
+			description:"",
+			available:false,
+			feature:false,
+			category:2
+		}
+	},
+	categories:{
+		1:{
+			id:1,
+			name:"Category 1"
+		},
+		2:{
+			id:2,
+			name:"Category 2"
+		},
+	},
+	search_typing:"",
+	cart:{
+		products:[
+			{ 
+				product:1,
+				quantity:2
+			},
+			{ 
+				product:2,
+				quantity:1
+			}
+		],
+		comments:"",
+		payment:1,
+		delivery:2
+	},
+	orders:{
+		105:{
+			id:105,
+			status:3,
+			user:"User A",
+			timestamp:0,
+			products:[
+				{ 
+					product:1,
+					quantity:2
+				},
+				{ 
+					product:2,
+					quantity:1
+				}
+			],
+			comments:"",
+			payment:1,
+			delivery:2
+		}
+	},
+	chats:{
+		1:{
+			id:1,
+			message:"Good morning?",
+			timestamp:0,
+			request:true
+		},
+		2:{
+			id:2,
+			message:"Will you open on sunday",
+			timestamp:0,
+			request:true
+		},
+		3:{
+			id:3,
+			message:"Hello, Yes we open on weekend",
+			timestamp:0,
+			request:false
+		}
+	},
+	chat_typing:"",
+	config:{
+		store:{
+			name:"Store name",
+			description:"The best cart accesories",
+			logo:"",
+			url:"",
+			qr:"img/qrsample.png"
+		},
+		color:{
+			header:"#053e7b",
+			footer:"#e9ebee",
+			text:"#666666",
+			link:"#053e7b"
+		},
+		chat_quick_answer:[
+			"Hello, how can i help you",
+			"Thanks for contact us"
+		],
+		order_options:{
+			payment:{
+				1:{
+					id:1,
+					name:"Cash"
+				},
+				2:{
+					id:2,
+					name:"Credit card"
+				},
+				3:{
+					id:3,
+					name:"Paypal"
+				}
+			},
+			delivery:{
+				1:{
+					id:1,
+					name:"Click and collect"
+				},
+				2:{
+					id:2,
+					name:"Postal service"
+				},
+				3:{
+					id:3,
+					name:"Uber eats"
+				}
+			},
+			status:{
+				1:{
+					id:1,
+					name:"Received",
+					user_edited:false
+				},
+				2:{
+					id:2,
+					name:"Packing",
+					user_edited:true,
+				},
+				3:{
+					id:3,
+					name:"Proccess 1",
+					user_edited:true
+				},
+				4:{
+					id:4,
+					name:"Process 2",
+					user_edited:true
+				},
+				5:{
+					id:5,
+					name:"Completed",
+					user_edited:false
+				},
+				6:{
+					id:6,
+					name:"Canceled",
+					internal:true
+				}
+			}
+		}
+	},
+	statistics:{
+		visitors:5,
+		orders:3,
+		chats:2
+	},
+	log:[
+		{
+			action:"See product x",
+			timestamp:0
+		},
+		{
+			action:"Add cart product x",
+			timestamp:0
+		}
+	]
+}
