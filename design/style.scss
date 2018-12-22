@@ -290,6 +290,16 @@ div.footer{
 	}
 }
 
+.page-orders{
+	@include flex(column,nowrap,false,center,center);
+	width:100%;
+	ul.flex-row{
+		* {
+			@include separate-elements(1);
+		}
+	}
+}
+
 .search{
 	@media (min-width:$mobile-size) {
 		width:150px
@@ -300,19 +310,25 @@ div.footer{
 div.order{
 	@include flex(column,nowrap,false,center,flex-start);
 	background-color:$order-color;
-	@include border-radius(15px);
+	@include border-radius(10px);
 	min-height:80px;
 	max-height:150px;
-	padding:5px;
+	padding:15px;
+	margin:20px;
 	.order-header{
-		@include flex(row,nowrap,false,center,flex-start);
+		@include flex(row,wrap,false,center,flex-start);
+		width:100%;
 		p, span {
 			white-space:nowrap;
 		}
 	}
+	.order-info{
+		font-style:italic;
+	}
 	.order-product-list{
 		@include flex(column,nowrap,false,left,flex-start);
 		overflow-y:auto;
+		@include separate-elements(2);
 		width:100%;
 		* { 
 			padding:0px !important;
