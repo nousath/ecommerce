@@ -1,4 +1,5 @@
 {
+	navigate:"",
 	products:{
 		1:{
 			id:1,

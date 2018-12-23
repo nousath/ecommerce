@@ -1,0 +1,78 @@
+// General style for the app
+@import 'useful.scss';
+@import 'general.scss';
+
+* {
+	font-family: $font;
+    color:$text-color;
+    font-size:$font-size;
+}
+
+body{
+	margin:0px;
+	padding:0px;
+}
+
+a , a > p, a > span {
+	color:$link-color;
+	text-decoration: none;
+    cursor:pointer;
+}
+
+ul {
+	list-style:none;
+}
+
+h1{
+	font-size:125%;
+	font-weight:bold;
+}
+
+button{
+	background-color:$header-color;
+	@include border-radius(10px);
+	span, p {
+		color:white;
+		font-size:125%;
+	}
+	@include border-color($header-color, 6px);
+}
+
+input, select, textarea {
+    @include border-color($border-color,3px);
+    @include border-radius(6px);
+}
+
+select{
+	-webkit-appearance: none;
+    background: url(/img/flecha-abajo-small.png) no-repeat right;
+    min-width: 30px;
+    cursor: pointer;
+}
+
+.price{
+	font-weight:bold;
+}
+
+.title {
+	border-bottom: 3px solid #e9ebee;
+	width:100%;
+	text-align:center;
+}
+
+/**
+show two li in a row
+*/
+ul.flex-row{
+	@include flex(row,nowrap,false,center,center);
+	width:100%;
+}
+
+div.product-new{
+	position:absolute;
+	bottom:30px;
+	right:30px;
+	img {
+		width:50px;
+	}
+}

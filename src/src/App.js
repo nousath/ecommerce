@@ -1,10 +1,15 @@
-import React, { Component } from 'react';
-import './App.css';
+import React from 'react';
+import './css/App.scss';
+import redux from './store'; 
+// typical store, call it different for dont confuse concept store from ecommerce
+import Header from './components/Header.js'
 
-class App extends Component {
+// main APP
+class App extends React.Component {
   render() {
+    console.log(redux.getState());
     return (
-      <p>Hello world</p>
+      <Header redux={redux.getState()}></Header>
     );
   }
 }

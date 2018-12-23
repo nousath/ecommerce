@@ -1,0 +1,31 @@
+@import 'useful.scss';
+@import 'general.scss';
+
+div.header{
+	position:fixed;
+	z-index:2;
+	background-color:$header-color;
+	width:100%;
+	height:$bar-height;
+	top:0px;
+	left:0px;
+	@include no-border-padding();
+	span, p, li, h1, a{
+		color:white;
+	}
+	h1{
+		white-space:nowrap;
+		padding-left:5px;
+	}
+	.menu{
+		@include flex(row,nowrap,true,center,space-between);
+	}
+	.menu-icons {
+		@include flex(row,nowrap,false,center,left);
+		@include separate-elements(2);
+		img {
+			width:$icon-size;
+			padding-left:10px;
+		}
+	}
+}
