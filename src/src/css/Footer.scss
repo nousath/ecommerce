@@ -1,0 +1,12 @@
+@import 'useful.scss';
+@import 'general.scss';
+
+div.footer{
+	background-color:$footer-color;
+	width:100%;
+	min-height:$bar-height;
+	position:absolute;
+	bottom:0px;
+	left:0px;
+	@include no-border-padding();
+}

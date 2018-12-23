@@ -1,0 +1,9 @@
+@import 'useful.scss';
+@import 'general.scss';
+
+.page-create{
+	@include flex(column,nowrap,true,center,center);
+	* {
+		@include separate-elements(2);
+	}
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import redux from '../store/';
 import '../css/Header.scss';
 import chatimg from '../img/chat.png';
 import chatimgselected from '../img/chat_selected.png';
@@ -11,11 +12,11 @@ import configimgselected from '../img/config_selected.png';
 
 class Header extends React.Component{
 	render(){
-		const redux = this.props.redux;
+		const newStore = this.props.newStore;
 		return <div className="header">
 			<div className="menu">
-				<HeaderTitle navigate={redux.navigate} />
-				<HeaderMenu />
+				<HeaderTitle newStore={newStore} />
+				<HeaderMenu newStore={newStore} />
 			</div>
 		</div>
 	}
@@ -23,18 +24,24 @@ class Header extends React.Component{
 
 class HeaderTitle extends React.Component{
 	render(){
-		return <h1 className="breadcumbs">Store Name</h1>;
+		const state = redux.getState();
+		const navigate = state.navigate;
+		const storeName = state.config.store.name;
+		return <h1>{
+			storeName + // StoreCreate show header empty
+			(navigate !== "" && navigate !== undefined ? ' > '+navigate : '')}</h1>; // breadcumbs
 	}
 }
 
 class HeaderMenu extends React.Component{
 	render(){
-		return <ul className="menu-icons">
-			<li title="Chat with the store"><a href="chat.html"><img src={chatimg}/ ></a></li>
-			<li><a href="orders.html"><img src={ordersimg} /></a></li>
-			<li title="Shopping cart"><a href="cart.html"><img src={cartimg} /></a></li>
-			<li title="Options and settings"><a href="config.html"><img src={configimg} /></a></li>
-		</ul>
+		return (this.props.newStore ? null :
+		<ul className="menu-icons">
+			<li title="Chat with the store"><a href="chat.html"><img src={chatimg} alt="Chat" title="Chat with us"/ ></a></li>
+			<li><a href="orders.html"><img src={ordersimg} alt="Orders" title="Last order"  /></a></li>
+			<li title="Shopping cart"><a href="cart.html"><img src={cartimg} alt="Shopping cart" title="Shopping cart" /></a></li>
+			<li title="Options and settings"><a href="config.html"><img src={configimg} alt="Options" title="Config the store" /></a></li>
+		</ul>)
 	}	
 }
 
