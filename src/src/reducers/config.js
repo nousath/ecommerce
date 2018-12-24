@@ -1,7 +1,8 @@
-import { EDIT_CONFIG_STORE_NAME } from '../actions/constants.js';
+import { CONFIG_STORE_NAME } from '../actions/constants.js';
 
 // default config for avoid undefined erros
 const emptyConfig = {
+	admin_user:true,
 	store:{
 		name:"",
 		description:"",
@@ -85,7 +86,7 @@ const emptyConfig = {
 
 export function configReducers(state = emptyConfig, action) {
     switch (action.type) {
-    	case EDIT_CONFIG_STORE_NAME:
+    	case CONFIG_STORE_NAME:
     		const name = action.payload;
     		return {
     			...state,

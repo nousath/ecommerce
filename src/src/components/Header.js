@@ -28,14 +28,14 @@ class HeaderTitle extends React.Component{
 		const navigate = state.navigate;
 		const storeName = state.config.store.name;
 		return <h1>{
-			storeName + // StoreCreate show header empty
+			storeName + 
 			(navigate !== "" && navigate !== undefined ? ' > '+navigate : '')}</h1>; // breadcumbs
 	}
 }
 
 class HeaderMenu extends React.Component{
 	render(){
-		return (this.props.newStore ? null :
+		return (this.props.newStore ? null : // StoreCreate show header empty
 		<ul className="menu-icons">
 			<li title="Chat with the store"><a href="chat.html"><img src={chatimg} alt="Chat" title="Chat with us"/ ></a></li>
 			<li><a href="orders.html"><img src={ordersimg} alt="Orders" title="Last order"  /></a></li>

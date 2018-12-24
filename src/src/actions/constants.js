@@ -1,3 +1,8 @@
 // constants actions type
 
-export const EDIT_CONFIG_STORE_NAME = "EDIT_CONFIG_STORE_NAME";
+//PRODUCTS
+export const PRODUCT_FILE = "PRODUCT_FILE";
+
+//CONFIG
+export const CONFIG_STORE_NAME = "CONFIG_STORE_NAME";
+

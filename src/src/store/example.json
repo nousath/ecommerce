@@ -9,7 +9,13 @@
 			description:"",
 			available:true,
 			feature:false,
-			category:1
+			category:1,
+			comments:[{
+					calification:5, 
+					text:"",
+					timestamp:0,
+					user:""
+				}]
 		},
 		2:{
 			id:2,
@@ -141,6 +147,7 @@
 	},
 	chat_typing:"",
 	config:{
+		admin_user:false,
 		store:{
 			name:"Store name",
 			description:"The best cart accesories",
@@ -229,11 +236,13 @@
 	log:[
 		{
 			action:"See product x",
-			timestamp:0
+			timestamp:0,
+			user:"Name"
 		},
 		{
 			action:"Add cart product x",
-			timestamp:0
+			timestamp:0,
+			user:"Name"
 		}
 	]
 }

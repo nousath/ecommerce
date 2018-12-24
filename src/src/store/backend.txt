@@ -1,0 +1,130 @@
+Backend design
+
+FrontEnd
+*** Navigator
+ReactJS Redux
+
+--------------------
+
+*** AWS Lambda
+Microservices for encapsulated database access, authenticate user and create log access
+
+API
+---
+createStore() => returns {
+		store: store.id, 
+		session: session.id
+	}
+	PROCESS
+	1. insert DB store
+	2. insert DB store session with type AdminAnnonymous
+	3. call log function
+	NOTE: this function allow create store and products without email or sign up for UX and for show functionality and demos
+---
+getStore(storeId, sessionId="") => returns {
+	complete redux object
+}
+	MAIN function, requested at software start, all frontend will build it base on this
+	PROCESS
+	1. check storeId exists DB store
+	2. search DB product, filtered by storeId
+	3. search DB category filtered by storeId
+	4. search DB config filtered by storeId
+	5. if sessionId exists and get DB userId 
+	5.1 search DB cart filtered by storeId and userId
+	5.2 search DB chat filtered by storeId and userId
+	5.3 search DB order filtered by storeId and userId
+	6. if userId has rol seller or Admin
+	6.1 search DB order filtered by storeId and status not canceled and not completed
+	6.2 search DB chat filtered by storeId and conversation without answer
+	6.3 calculate config.statistis count visitor, count orders, count chat, all filtered by store
+	7. if userId has rol Admin
+	7.1 mark config with admin flag
+	8. if userId has rol visitor, omit config.chat_quick_answer
+---
+updateStore(storeId, action, collection, key = "", object, [sessionId]) => returns {
+	status:OK,
+	error:""
+}
+	PROCESS
+	1. check storeId on DB store
+	2. check collection exists
+	3. save info DB on table collection	if key is empty it will insert or key exist it will update
+	NOTE: the business or process logic will be execute on redux reductors, the result will be saved on redux and store and mongodb database
+	for safety reason the API will validate object is according to action and collection
+---
+createUser(email, hashpass, rol="Visitor", storeId, sessionId) =>returns {
+		session:session.id
+	}
+	sign up process for admin or for visitors
+	PROCESS
+	1. check email user dont exists
+	2. check storeId exists
+	3. check sessionId exists and rol has right to create new user
+	4. insert DB user
+	5. call login process
+	6. call log function
+---
+login(email, hasspass, sessionOld = "") => returns {
+		session:session.id
+	}
+	PROCESS
+	1. if oldSession exists in DB session.id generate new session and replace DB session.timestamp
+	2. check DB user.email exists
+	3. compare hashpass
+	4.1 check DB session if already exists
+	4.2 insert DB session
+	5. call log function
+---
+logout(sessionId)
+	for visitor or registered user end the session
+	PROCESS
+	1. delete DB session filtered by sessionId
+---
+maintenanceDB()
+	maintenance process every 7 days, internal not api
+	PROCESS
+	1. delete DB session with session.timestamp > 7 days and not activity on DB log
+	2. delete store create without associated DB user and 30 days of inactivy on DB log
+	3. backup and delete store with more than 90 days of inactivy check DB log
+
+
+
+
+
+*** MongoDB Atlas
+collections with same redux JSON structure (see /store/example.json)  plus storeId for separate info
+- product
+- category
+- config
+- cart (plus userId)
+- order (plus userId)
+- chat (plus userId)
+- log
+
+access control
+- store  // list stores
+	{
+		id
+		token
+		timestamp	
+	}
+- user // list user
+	{
+		email
+		pass	// hash sha512
+		rol		// Admin, Seller or Visitor
+		storeId
+		timestamp
+		lastlogin
+		storeId
+	}
+- session // login, logout control
+	{
+		id
+		token
+		storeId
+		type	// AdminAnnonymous, Visitor, LoggedAdmin, LoggedUser
+		userId
+		timestamp
+	}
