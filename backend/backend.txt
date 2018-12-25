@@ -14,7 +14,7 @@ Microservices for encapsulated database access, authenticate user and create log
 API
 ---
 createStore() => returns {
-		store: store.id, 
+		store: store.token, 
 		session: session.id
 	}
 	PROCESS
@@ -140,7 +140,7 @@ access control
 	{
 		email
 		pass	// hash sha512
-		rol		// Admin, Seller or Visitor
+		rol		// A => Admin, S => Seller or V => Visitor 
 		storeId
 		timestamp
 		lastlogin
@@ -148,10 +148,9 @@ access control
 	}
 - session // login, logout control
 	{
-		id
 		token
 		storeId
-		type	// AdminAnnonymous, Visitor, LoggedAdmin, LoggedUser
+		type	// VA => VisitorAdmin, V => VisitorAnnonymous, AL => AdminLogged, VL => VisitorLogged
 		userId
 		timestamp
 	}

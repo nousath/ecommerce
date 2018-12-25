@@ -28,7 +28,7 @@ function DBconnect(){
 		// create connection
 		MongoClient.connect(uri,{ useNewUrlParser: true })
 		  .then(conn => {
-		  	console.log('DB connected');
+		  	//console.log('DB connected');
 		  	connection = conn;
 		  	dbInstance = conn.db('ecommerce'); // select database
 		  	fullfill(dbInstance);
@@ -46,7 +46,7 @@ function DBconnect(){
 function DBdisconnect(){
 	countingActions--;
 	if(countingActions <= 0){
-		console.log('DB disconnecting');
+		//console.log('DB disconnecting');
 		connection.close(false,()=>{
 			//console.log('DB disconnect');
 		});	
@@ -119,6 +119,35 @@ function DBcollection(collectionName, mongofunction = '', mongocallback = ''){
 	}
 }
 
+// register log info
+function DBLog(storeId, action, detail="", user = ""){
+	DBcollection('log',collection=>{
+		return collection.insertOne({
+			storeId:storeId,
+			action:action,
+			detail:detail,
+			user:user,
+			timestamp:new Date().getTime()
+		});
+	})
+}
+
+// check if store exists, promise return store object
+function DBStoreExists(storeToken){
+	return new Promise((fullfill, reject)=>{
+		DBcollection('store',collection=>{
+			return collection.findOne({token:storeToken});
+		},result=>{
+			if(result !== undefined && result !== ''){
+				fullfill(result);
+			}else{
+				DBLog(-1,'Store not found', storeToken);
+				reject();
+			}
+		});
+	});
+}
+
 /**
  * example of use 
 DBconnect().then(()=>{
@@ -137,5 +166,7 @@ DBconnect().then(()=>{
 
 module.exports = {
 	connect: DBconnect,
-	collection: DBcollection
+	collection: DBcollection,
+	log:DBLog,
+	store:DBStoreExists,
 }
