@@ -1,10 +1,12 @@
 Backend design
 
 FrontEnd
-*** Navigator
-ReactJS Redux
+*** Navigator -> ReactJS -> Redux
+*** Android app -> ReactNative -> Redux
+*** Iphone app -> ReactNative -> Redux
 
 --------------------
+Backend
 
 *** AWS Lambda
 Microservices for encapsulated database access, authenticate user and create log access
@@ -52,6 +54,7 @@ updateStore(storeId, action, collection, key = "", object, [sessionId]) => retur
 	3. save info DB on table collection	if key is empty it will insert or key exist it will update
 	NOTE: the business or process logic will be execute on redux reductors, the result will be saved on redux and store and mongodb database
 	for safety reason the API will validate object is according to action and collection
+	4. call log function
 ---
 createUser(email, hashpass, rol="Visitor", storeId, sessionId) =>returns {
 		session:session.id
@@ -88,8 +91,32 @@ maintenanceDB()
 	2. delete store create without associated DB user and 30 days of inactivy on DB log
 	3. backup and delete store with more than 90 days of inactivy check DB log
 
-
-
+*** Websocket - Live notifications
+navigator javascript will create wss connections for send and receive live notifications
+---
+chat(chatObject, sessionId)
+	after every message
+	NOTIFY
+	1. if chat.request send to all sellers or admin
+	if not an admin is not connected send email to admin
+	2. if not chat.request send to the user
+	if user is not connected send email to user
+---
+order(orderObject, sessionId)
+	after every changed on order
+	NOTIFY
+	1. send to all sellers or admin
+	if order is generated for user and not an admin is not connected
+	send email to admin
+	2. send to the user
+	if status is completed or cancelled and user is not connected send email to user
+---
+visitorNavigate(navigate,sessionId)
+	NOTIFY
+	1. if sellers or admin are connected send info about visitor navigation
+---
+other api functions
+for network speed websocket vs https receive all api functions and forward to aws lambda
 
 
 *** MongoDB Atlas
