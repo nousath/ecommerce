@@ -33,9 +33,9 @@ getStore(storeId, sessionId="") => returns {
 	3. search DB category filtered by storeId
 	4. search DB config filtered by storeId
 	5. if sessionId exists and get DB userId 
-	5.1 search DB cart filtered by storeId and userId
-	5.2 search DB chat filtered by storeId and userId
-	5.3 search DB order filtered by storeId and userId
+	5.1 search DB cart filtered by storeId and sessionId
+	5.2 search DB chat filtered by storeId and sessionId
+	5.3 search DB order filtered by storeId and sessionId
 	6. if userId has rol seller or Admin
 	6.1 search DB order filtered by storeId and status not canceled and not completed
 	6.2 search DB chat filtered by storeId and conversation without answer
@@ -124,9 +124,9 @@ collections with same redux JSON structure (see /store/example.json)  plus store
 - product
 - category
 - config
-- cart (plus userId)
-- order (plus userId)
-- chat (plus userId)
+- cart (plus sessionId)
+- order (plus sessionId)
+- chat (plus sessionId)
 - log
 
 access control

@@ -2,7 +2,11 @@
 MongoDB functions
 */
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://devuser:YbXi1QeK5^6Z@jjperez89-u11ho.mongodb.net/ecommerce?retryWrites=true";
+// mongoDB Atlas
+//const uri = "mongodb+srv://devuser:YbXi1QeK5^6Z@jjperez89-u11ho.mongodb.net/ecommerce?retryWrites=true";
+// localhost
+const uri = "mongodb://localhost:27017/ecommerce?retryWrites=true";
+
 
 // managed several petitions with same connections
 var connection = '';
@@ -18,7 +22,7 @@ function DBconnect(){
 		// if connection is already open
 		if(connection !== '' && connection !== undefined){
 			if(connection.isConnected()){
-				//console.log('reuse dbInstance');
+				DBDebug('reuse dbInstance');
 				fullfill(dbInstance);
 				//disconnect(); 
 				// NOTE; disconnect must be executed after all fullfill
@@ -28,7 +32,7 @@ function DBconnect(){
 		// create connection
 		MongoClient.connect(uri,{ useNewUrlParser: true })
 		  .then(conn => {
-		  	//console.log('DB connected');
+		  	DBDebug('DB connected');
 		  	connection = conn;
 		  	dbInstance = conn.db('ecommerce'); // select database
 		  	fullfill(dbInstance);
@@ -46,17 +50,21 @@ function DBconnect(){
 function DBdisconnect(){
 	countingActions--;
 	if(countingActions <= 0){
-		//console.log('DB disconnecting');
+		DBDebug('DB disconnecting');
 		connection.close(false,()=>{
-			//console.log('DB disconnect');
+			DBDebug('DB disconnect');
 		});	
 	}else{
-		//console.log('Waiting functions for disconnect '+ countingActions);
+		DBDebug('Waiting functions for disconnect '+ countingActions);
 	}
 }
 
 function DBError(message){
 	console.log('DB ERROR '+message);
+}
+
+function DBDebug(message){
+	//console.log('DB Debug '+message);	
 }
 
 /***
@@ -73,17 +81,26 @@ function DBcreateStructure(){
 				.then(()=>{
 					// create index by storeId
 					if(collectionName != 'store'){ // all excepts store
-						DBcollection(collectionName,collection=>{
-							return collection.createIndex('storeId');
-						},()=>{
-							console.log('index storeId on '+collectionName+' created');	
-						});
+						DBcreateIndex(collectionName, 'storeId');
+					}
+					if(collectionName == 'store'){
+						DBcreateIndex(collectionName, 'token');
+					}else if(collectionName == 'session'){
+						DBcreateIndex(collectionName, 'token');
 					}
 					console.log('collection '+collectionName+' created');
 				})
 				.catch(DBError)
 				.finally(DBdisconnect);	
 		});
+	});
+}
+
+function DBcreateIndex(collectionName, index){
+	DBcollection(collectionName,collection=>{
+		return collection.createIndex(index);
+	},()=>{
+		console.log('index '+index+' on '+collectionName+' created');	
 	});
 }
 //DBcreateStructure(); // just call one time
@@ -109,7 +126,7 @@ function DBcollection(collectionName, mongofunction = '', mongocallback = ''){
 			});
 		});	
 	}else{
-		// use the promise, for encapsulated disconnect functionality
+		// use the promise, for encapsulated DBDisconnect and DBerror functionality
 		DBcollection(collectionName).then(collection=>{
 			mongofunction(collection). // find, insert, update, etc
 			then(mongocallback) // result of mongodb function
@@ -118,6 +135,16 @@ function DBcollection(collectionName, mongofunction = '', mongocallback = ''){
 		}).catch(DBError);
 	}
 }
+
+/**
+ * example of use 	
+DBcollection('test',collection=>{
+	//mongo promise
+	return collection.countDocuments();
+},count=>{ //then executed mongoresult
+	console.log('conteo '+count);
+});
+*/
 
 // register log info
 function DBLog(storeId, action, detail="", user = ""){
@@ -129,44 +156,115 @@ function DBLog(storeId, action, detail="", user = ""){
 			user:user,
 			timestamp:new Date().getTime()
 		});
-	})
+	});
 }
 
-// check if store exists, promise return store object
-function DBStoreExists(storeToken){
+// encapsulated search one row into collection
+function DBDocumentExists(collectionName, findCriteria){
 	return new Promise((fullfill, reject)=>{
-		DBcollection('store',collection=>{
-			return collection.findOne({token:storeToken});
+		DBcollection(collectionName,collection=>{
+			return collection.findOne(findCriteria);
 		},result=>{
-			if(result !== undefined && result !== ''){
+			if(result !== null){
+				DBDebug(collectionName + ' found');
 				fullfill(result);
 			}else{
-				DBLog(-1,'Store not found', storeToken);
-				reject();
+				DBLog('', 'DB '+collectionName+' not found', findCriteria);
+				reject(collectionName+' not found');
 			}
 		});
 	});
 }
 
-/**
- * example of use 
-DBconnect().then(()=>{
-	
-	DBcollection('test',collection=>{
-		//mongofunction
-		return collection.countDocuments();
-	},count=>{ //then executed mongoresult
-		console.log('conteo '+count);
-	});
 
-}).catch(DBError);
-*/
+// check if store exists, promise return store object
+function storeExists(storeToken){
+	return DBDocumentExists('store',{token:storeToken});
+}
+
+// check if session exists, promise return store object
+function sessionExists(sessionToken, storeId = ''){
+	return DBDocumentExists('session',{token:sessionToken});
+}
+
+// check if session exists, promise return store object
+function userExists(userId){
+	return DBDocumentExists('user',{token:storeToken});	
+}
+
+// encapsulated search per storeId
+function DBSearchByStore(collectionName, storeId){
+	return new Promise((fullfill, reject)=>{
+		if(storeId === '' || storeId === undefined || storeId === null){
+			DBError('storeId request empty');
+			reject()
+		}else{
+			DBcollection(collectionName,collection=>{
+				return collection.find({store:storeId}).toArray();
+			},fullfill);
+		}
+	});
+}
+
+// search products of store
+function productSearch(storeId){
+	return DBSearchByStore('product', storeId);
+}
+
+// search categories of store
+function categorySearch(storeId){
+	return DBSearchByStore('category', storeId);
+}
+
+// search config of store
+function configSearch(storeId){
+	return DBSearchByStore('config', storeId);
+}
+
+// encapsulated search per storeId and sessionId
+function DBSearchBySession(collectionName, storeId, sessionToken){
+	return new Promise((fullfill, reject)=>{
+		if(storeId === '' || storeId === undefined || storeId === null){
+			DBError('storeId request empty');
+			reject()
+		}else if(sessionToken === '' || sessionToken === undefined || sessionToken === null){
+			DBError('sessionId request empty');
+			reject()
+		}else{
+			DBcollection(collectionName,collection=>{
+				return collection.find({sessionToken:sessionToken}).toArray();
+				// NOTE: sessionId is unique key, indepent of store
+			},fullfill);
+		}
+	});
+}
+
+// search cart
+function cartSearch(storeId, sessionId){
+	return DBSearchBySession('cart',storeId, sessionId);
+}
+
+function orderSearch(storeId, sessionId){
+	return DBSearchBySession('order',storeId, sessionId);
+	// TODO limit last 25
+}
+
+function chatSearch(storeId, sessionId){
+	return DBSearchBySession('chat',storeId, sessionId);
+	// TODO limit last 25
+}
 
 // exports
-
 module.exports = {
 	connect: DBconnect,
 	collection: DBcollection,
 	log:DBLog,
-	store:DBStoreExists,
+	store:storeExists,
+	session:sessionExists,
+	product:productSearch,
+	category:categorySearch,
+	config:configSearch,
+	cart:cartSearch,
+	order:orderSearch,
+	chat:chatSearch
 }

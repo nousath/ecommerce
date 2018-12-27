@@ -16,6 +16,9 @@ function APIError(err){
 	console.log(err);
 }
 
+// TODO: separate download image of getStore
+// TODO: APIError, DBLog save to db return api response
+
 // user type constant
 const USER_ADMIN = 'A';
 const USER_SELLER = 'S';
@@ -29,92 +32,163 @@ const SESSION_VISITOR_ANNON = 'VA';
 
 // allow create store and products without email or sign up for UX and for show functionality and demos
 function createStore(callback){
-	mongo.connect().then(()=>{
-		var storeId = 1;
-		const storeToken = randomToken();
+	var storeId = 1;
+	const storeToken = randomToken();
+	mongo.collection('store',collection=>{
+		return collection.countDocuments(); // store count for get max id
+	},count=>{
+		// 1. insert DB store
+		storeId = count + 1;
 		mongo.collection('store',collection=>{
-			return collection.countDocuments(); // store count for get max id
-		},count=>{
-			// 1. insert DB store
-			storeId = count + 1;
-			mongo.collection('store',collection=>{
+			return collection.insertOne({
+				id:storeId,
+				token:storeToken,
+				timestamp:new Date().getTime()
+			});
+		},(result)=>{
+			// 2. insert DB store session with type AdminAnnonymous
+			const sessionToken = randomToken();
+			mongo.collection('session',collection=>{
 				return collection.insertOne({
-					id:storeId,
-					token:storeToken,
+					token:sessionToken,
+					storeId:storeId,
+					type:SESSION_ADMIN_ANNON, // visitoradmin
+					userId:'',
 					timestamp:new Date().getTime()
 				});
-			},(result)=>{
-				// 2. insert DB store session with type AdminAnnonymous
-				const sessionToken = randomToken();
-				mongo.collection('session',collection=>{
-					return collection.insertOne({
-						token:sessionToken,
-						storeId:storeId,
-						type:SESSION_ADMIN_ANNON, // visitoradmin
-						userId:'',
-						timestamp:new Date().getTime()
-					});
-				},(result2)=>{
-					// final result
-					callback({
-						store:storeToken,
-						session:sessionToken
-					});
-					// 3. log
-					mongo.log(storeId, 'create store', storeToken, 'annonymus');
-				})
+			},(result2)=>{
+				// final result
+				callback({
+					store:storeToken,
+					session:sessionToken
+				});
+				// 3. log
+				mongo.log(storeId, 'create store', storeToken, 'annonymus');
 			})
-		});
-	})
-	.catch(APIError);
+		})
+	});
 }
 
 
 // MAIN function, requested at software start, all frontend will build it base on this
 // return redux object
-function getStore(storeToken, sessionToken, callback){
+// PROCESS 
+//1. check storeId exists DB store
+//2. search DB product, filtered by storeId
+//3. search DB category filtered by storeId
+//4. search DB config filtered by storeId
+//5. if sessionId exists and get DB userId 
+//5.1 search DB cart filtered by storeId and userId
+//5.2 search DB chat filtered by storeId and userId
+//5.3 search DB order filtered by storeId and userId
+//6. if userId has rol seller or Admin
+//6.1 search DB order filtered by storeId and status not canceled and not completed
+//6.2 search DB chat filtered by storeId and conversation without answer
+//6.3 calculate config.statistis count visitor, count orders, count chat, all filtered by store
+//7. if userId has rol Admin
+//7.1 mark config with admin flag
+//8. if userId has rol visitor, omit config.chat_quick_answer
+function getStore(storeToken, sessionToken = '', callback){
 	mongo.connect().then(()=>{
-		// PROCESS 
-		//1. check storeId exists DB store
-		mongo.store(storeToken)
-		.then(storeObject=>{
-
-
-			// VOY AQUI, revisando funciones en paralelo
-
-
-		})
-		.catch(()=>{ // err
+		// step 1 get using parallel store and user info
+		var storeObject = null;
+		var sessionObject = null;
+		var userObject = null;
+		var waiting = 1; // wait all functions
+		const nextStep = ()=>{
+			waiting--;
+			if(waiting == 0){
+				getStoreStep2(storeObject, sessionObject, userObject, callback);
+			}
+		};
+		// store 
+		mongo.store(storeToken).then(result=>{
+			storeObject = result;
+			nextStep();
+		}).catch(()=>{ // err
 			callback({
 				error:'Store not found',
 				detail:storeToken
 			});
-		})
-		//2. search DB product, filtered by storeId
-		//3. search DB category filtered by storeId
-		//4. search DB config filtered by storeId
-		//5. if sessionId exists and get DB userId 
-		//5.1 search DB cart filtered by storeId and userId
-		//5.2 search DB chat filtered by storeId and userId
-		//5.3 search DB order filtered by storeId and userId
-		//6. if userId has rol seller or Admin
-		//6.1 search DB order filtered by storeId and status not canceled and not completed
-		//6.2 search DB chat filtered by storeId and conversation without answer
-		//6.3 calculate config.statistis count visitor, count orders, count chat, all filtered by store
-		//7. if userId has rol Admin
-		//7.1 mark config with admin flag
-		//8. if userId has rol visitor, omit config.chat_quick_answer
-	})
-	.catch(APIError);
+		});
+		if(sessionToken != ''){
+			waiting++;
+			mongo.session(sessionToken).then(result=>{
+				sessionObject = result;
+				if(result.userId !== '' && result.userId !== undefined){
+					/*
+					// TODO request user id
+					waiting++;
+					mongo.user(result.userId);
+					nextStep();*/
+				}
+			}).finally(nextStep);
+		}
+	});
 }
+
+// after get store and userinfo
+function getStoreStep2(storeObject, sessionObject, userObject, callback){
+	console.log('Step2', storeObject, sessionObject);
+	// security check session from same store
+	const storeId = storeObject.id;
+	if(sessionObject !== null){
+		if(storeId != sessionObject.storeId){
+			// security violation
+			callback({
+				error:'Session token from other store'
+			});
+			mongo.log(storeId, 'Security session from other store', sessionObject.token, '');
+			return;
+		}
+	}
+	// redux object
+	var redux = new Object();
+	var waiting = 3;
+	const nextStep = ()=>{
+		waiting--;
+		if(waiting == 0){
+			// after get alls collections
+			callback(redux);
+		}
+	};
+	// get product, category and config
+	mongo.product(storeId).then(result=>{
+		redux.product = result;
+	})
+	.finally(nextStep);
+	mongo.category(storeId).then(result=>{
+		redux.category = result;
+	})
+	.finally(nextStep);
+	mongo.config(storeId).then(result=>{
+		redux.config = result;
+	})
+	.finally(nextStep);
+
+	// cart, order, chat
+	if(sessionObject !== null){
+		waiting += 3;
+		const sessionToken = sessionObject.token;
+		mongo.cart(storeId, sessionToken).then(result=>{
+			redux.cart = result;
+		})
+		.finally(nextStep);
+		mongo.order(storeId, sessionToken).then(result=>{
+			redux.order = result;
+		})
+		.finally(nextStep);
+		mongo.chat(storeId, sessionToken).then(result=>{
+			redux.chat = result;
+		})
+		.finally(nextStep);
+	}
+	// TODO build redux object case admin
+}
+
 
 
 // test
 //createStore(console.log);
 
-// test search store
-mongo.connect().then(()=>{
-	mongo.store('nf8demmykbh2y90nh8sy9fglb8qrfm6n5')
-	.then(console.log)
-	.catch(console.log);
-} );
+getStore('m1dkvbyuh8dmckld3l0fgm8lup1h2a6', 'iamkfni2dyslzwr0i9x18lj1w8v7jscno', console.log);
