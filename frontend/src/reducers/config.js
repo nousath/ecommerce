@@ -87,12 +87,11 @@ const emptyConfig = {
 export function configReducers(state = emptyConfig, action) {
     switch (action.type) {
     	case CONFIG_STORE_NAME:
-    		const name = action.payload;
     		return {
     			...state,
     			store:{
     				...state.store,
-    				name
+    				name:action.payload
     			}
     		};
         default:

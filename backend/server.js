@@ -14,7 +14,7 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(bodyParser.json());
 
 // create store
-server.get('/createStore',(req,res)=>{
+server.post('/createStore',(req,res)=>{
   ecommerce.createStore()
   	.then(result=>{
   		console.log('createStore',result);
@@ -27,7 +27,8 @@ server.get('/createStore',(req,res)=>{
 
 // get store info
 server.post('/getStore',(req,res)=>{
-	ecommerce.getStore(req.storeToken, req.sessionToken, req.action, req.key, req.object)
+  const data = req.body;
+	ecommerce.getStore(data.storeToken, data.sessionToken)
   	.then(result=>{
   		console.log('getStore',result);
   		res.json(result);
@@ -39,8 +40,9 @@ server.post('/getStore',(req,res)=>{
 
 // update store info
 server.post('/updateStore',(req,res)=>{
-  console.log('updateStore request', req);
-  ecommerce.updateStore(req.storeToken, req.sessionToken, req.action, req.key, req.object)
+  const data = req.body;
+  console.log('updateStore request', data);
+  ecommerce.updateStore(data.storeToken, data.sessionToken, data.action, data.key, data.object)
   	.then(result=>{
   		console.log('updateStore',result);
   		res.json(result);

@@ -14,8 +14,8 @@ Microservices for encapsulated database access, authenticate user and create log
 API
 ---
 createStore() => returns {
-		store: store.token, 
-		session: session.id
+		storeToken: store.token, 
+		sessionToken: session.token
 	}
 	PROCESS
 	1. insert DB store
@@ -23,26 +23,27 @@ createStore() => returns {
 	3. call log function
 	NOTE: this function allow create store and products without email or sign up for UX and for show functionality and demos
 ---
-getStore(storeId, sessionId="") => returns {
+getStore(storeToken, sessionToken="") => returns {
 	complete redux object
 }
 	MAIN function, requested at software start, all frontend will build it base on this
 	PROCESS
-	1. check storeId exists DB store
+	1. check storeToken exists DB store
 	2. search DB product, filtered by storeId
 	3. search DB category filtered by storeId
 	4. search DB config filtered by storeId
-	5. if sessionId exists and get DB userId 
+	5. if sessionId exists and get DB userId
 	5.1 search DB cart filtered by storeId and sessionId
 	5.2 search DB chat filtered by storeId and sessionId
 	5.3 search DB order filtered by storeId and sessionId
-	6. if userId has rol seller or Admin
-	6.1 search DB order filtered by storeId and status not canceled and not completed
-	6.2 search DB chat filtered by storeId and conversation without answer
-	6.3 calculate config.statistis count visitor, count orders, count chat, all filtered by store
-	7. if userId has rol Admin
-	7.1 mark config with admin flag
-	8. if userId has rol visitor, omit config.chat_quick_answer
+	6. if sessionToken does not exists create a new session for visitor
+	7. if userId has rol seller or Admin
+	7.1 search DB order filtered by storeId and status not canceled and not completed
+	7.2 search DB chat filtered by storeId and conversation without answer
+	7.3 calculate config.statistis count visitor, count orders, count chat, all filtered by store
+	8. if userId has rol Admin
+	8.1 mark config with admin flag
+	9. if userId has rol visitor, omit config.chat_quick_answer
 ---
 updateStore(storeId, action, key = "", object, [sessionId]) => returns {
 	status:OK,

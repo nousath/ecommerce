@@ -244,5 +244,9 @@
 			timestamp:0,
 			user:"Name"
 		}
-	]
+	],
+	api:{
+		storeToken:"",
+		sessionToken:""
+	}
 }

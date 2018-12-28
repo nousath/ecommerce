@@ -8,6 +8,7 @@ import { configReducers } from '../reducers/config.js'
 import { chatsReducers } from '../reducers/chat.js'
 import { chatTypingReducers } from '../reducers/chatTyping.js'
 import { searchTypingReducers } from '../reducers/search.js'
+import { apiReducers } from '../reducers/api.js'
 
 export default combineReducers({
 	products:productsReducers,
@@ -18,5 +19,6 @@ export default combineReducers({
 	navigate:navigateReducers,
 	searchTyping:searchTypingReducers,
 	chatTyping:chatTypingReducers,
-	config:configReducers
+	config:configReducers,
+	api:apiReducers
 });

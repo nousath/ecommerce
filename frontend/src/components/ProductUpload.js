@@ -9,7 +9,7 @@ class ProductUpload extends React.Component{
 		super(props);
 		// show files while upload to redux
 		this.state = {
-			files:new Array() // { name, status, error }
+			files:[] // { name, status, error }
 		};
 	}
 	// convert file to base64
@@ -44,11 +44,12 @@ class ProductUpload extends React.Component{
 		}
 	}
 	render(){
+		const filesLoading = this.state.files.map((file)=>{
+				return <span>{file.name} ({file.status})</span>
+			});
 		return [
 			<input type="file" name="ProductsImage" placeholder="Images" multiple="multiple" onChange={this.uploadProductHandler.bind(this)} />,
-			this.state.files.map((file)=>{
-				return <span>{file.name} ({file.status})</span>
-			})
+			filesLoading
 		]
 	}	
 }

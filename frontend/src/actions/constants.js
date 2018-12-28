@@ -6,3 +6,5 @@ export const PRODUCT_FILE = "PRODUCT_FILE";
 //CONFIG
 export const CONFIG_STORE_NAME = "CONFIG_STORE_NAME";
 
+//API
+export const API_SESSION = "API_SESSION";
