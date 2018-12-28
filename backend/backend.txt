@@ -44,7 +44,7 @@ getStore(storeId, sessionId="") => returns {
 	7.1 mark config with admin flag
 	8. if userId has rol visitor, omit config.chat_quick_answer
 ---
-updateStore(storeId, action, collection, key = "", object, [sessionId]) => returns {
+updateStore(storeId, action, key = "", object, [sessionId]) => returns {
 	status:OK,
 	error:""
 }

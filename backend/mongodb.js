@@ -10,6 +10,8 @@ const uri = "mongodb://localhost:27017/ecommerce?retryWrites=true";
 
 // managed several petitions with same connections
 var connection = '';
+var connectionProcess = false; // case multiple petitions
+var connectionWaiting = new Array(); 
 var dbInstance = '';
 var countingActions = 0;
 
@@ -29,7 +31,17 @@ function DBconnect(){
 				return;
 			}
 		}
+		// if connection is in process
+		if(connectionProcess){
+			//save actions for later
+			connectionWaiting.push({
+				fullfill:fullfill,
+				reject:reject
+			});
+			return;
+		}
 		// create connection
+		connectionProcess = true;
 		MongoClient.connect(uri,{ useNewUrlParser: true })
 		  .then(conn => {
 		  	DBDebug('DB connected');
@@ -42,6 +54,16 @@ function DBconnect(){
 		  	DBError('DB connection '+err);
 		  	reject();
 		  	disconnect();
+		  }).finally(()=>{
+		  	// waiting functions
+		  	connectionProcess = false;
+		  	connectionWaiting.forEach(waiting=>{
+		  		if(dbInstance !== '' && dbInstance !== undefined){
+		  			waiting.fullfill(dbInstance);
+			  	}else{
+			  		waiting.reject();
+			  	}
+		  	});
 		  });
 	});	
 }
@@ -83,10 +105,22 @@ function DBcreateStructure(){
 					if(collectionName != 'store'){ // all excepts store
 						DBcreateIndex(collectionName, 'storeId');
 					}
-					if(collectionName == 'store'){
-						DBcreateIndex(collectionName, 'token');
-					}else if(collectionName == 'session'){
-						DBcreateIndex(collectionName, 'token');
+					switch(collectionName){
+						case 'store':
+							DBcreateIndex(collectionName, 'token');
+							break;
+						case 'session':
+							DBcreateIndex(collectionName, 'token');
+							break;
+						case 'cart':
+							DBcreateIndex(collectionName, 'sessionToken');
+							break;
+						case 'order':
+							DBcreateIndex(collectionName, 'sessionToken');
+							break;
+						case 'chat':
+							DBcreateIndex(collectionName, 'sessionToken');
+							break;
 					}
 					console.log('collection '+collectionName+' created');
 				})
@@ -147,16 +181,12 @@ DBcollection('test',collection=>{
 */
 
 // register log info
-function DBLog(storeId, action, detail="", user = ""){
-	DBcollection('log',collection=>{
-		return collection.insertOne({
-			storeId:storeId,
+function DBLog(action, detail="", storeId = '', user = ""){
+	DBinsert('log', {
 			action:action,
 			detail:detail,
-			user:user,
-			timestamp:new Date().getTime()
-		});
-	});
+			user:user
+		}, storeId);
 }
 
 // encapsulated search one row into collection
@@ -169,7 +199,7 @@ function DBDocumentExists(collectionName, findCriteria){
 				DBDebug(collectionName + ' found');
 				fullfill(result);
 			}else{
-				DBLog('', 'DB '+collectionName+' not found', findCriteria);
+				DBLog('DB '+collectionName+' not found', findCriteria);
 				reject(collectionName+' not found');
 			}
 		});
@@ -183,7 +213,7 @@ function storeExists(storeToken){
 }
 
 // check if session exists, promise return store object
-function sessionExists(sessionToken, storeId = ''){
+function sessionExists(sessionToken){
 	return DBDocumentExists('session',{token:sessionToken});
 }
 
@@ -200,7 +230,7 @@ function DBSearchByStore(collectionName, storeId){
 			reject()
 		}else{
 			DBcollection(collectionName,collection=>{
-				return collection.find({store:storeId}).toArray();
+				return collection.find({storeId:storeId}).toArray();
 			},fullfill);
 		}
 	});
@@ -254,9 +284,46 @@ function chatSearch(storeId, sessionId){
 	// TODO limit last 25
 }
 
+// insert
+function DBinsert(collectionName, object, storeId = ''){
+	return new Promise((fullfill, reject)=>{
+		DBcollection(collectionName,collection=>{
+			const addInfo = element=>{
+				// add info time when it was created
+				element.timestamp = new Date().getTime();
+				// store
+				if(storeId !== '' && storeId !== null){
+					element.storeId = storeId;
+				}
+				return element;
+			};
+			if(object.length > 1){
+				object = object.map(addInfo);
+				return collection.insertMany(object);
+			}else{
+				return collection.insertOne(addInfo(object));
+			}
+		},(result)=>{
+			if(result.result.ok === 1){
+				fullfill(result.insertedId);	
+			}else{
+				reject({
+						error:'Error inserting '+collectionName
+					});
+				if(collectionName != 'log'){ // avoid loop
+					DBLog('DB error insert', collectionName, storeId);
+				}
+			}
+		});
+	});
+}
+
+function DBupdate(){
+
+}
+
 // exports
 module.exports = {
-	connect: DBconnect,
 	collection: DBcollection,
 	log:DBLog,
 	store:storeExists,
@@ -266,5 +333,7 @@ module.exports = {
 	config:configSearch,
 	cart:cartSearch,
 	order:orderSearch,
-	chat:chatSearch
+	chat:chatSearch,
+	insert:DBinsert,
+	update:DBupdate
 }
