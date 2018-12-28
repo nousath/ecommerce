@@ -4,7 +4,6 @@ import * as serviceWorker from './serviceWorker';
 import App from './App.js';
 import redux from './store';
 
-
 const render = () => {
   console.log(redux.getState()); // debug
   return ReactDOM.render(<App />, document.getElementById("root"));

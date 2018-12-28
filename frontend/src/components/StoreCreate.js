@@ -16,7 +16,7 @@ class StoreCreate extends React.Component{
 				<input type="text" name="StoreName" placeholder="Store Name" value={storeName} onChange={this.editStoreNameHandler.bind(this)} />
 				<span>What products or service are you offering</span>
 				<ProductUpload />
-				<a href="store.html"><button><span>Load images</span></button></a>
+				<a><button><span>Load images</span></button></a>
 				<a href="https://jjperez89.github.io/ecommerce">Test a demo</a>
 				<span>
 					<a href="https://jjperez89.github.com/ecommerce" title="Create an ecommerce on easy way, you just need upload your product image">How its works?</a>

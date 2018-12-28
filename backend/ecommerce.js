@@ -30,36 +30,40 @@ const SESSION_ADMIN_ANNON = 'AA'; // annonymus user
 const SESSION_VISITOR_ANNON = 'VA';
 
 // allow create store and products without email or sign up for UX and for show functionality and demos
-function createStore(callback){
-	var storeId = 1;
-	const storeToken = randomToken();
-	mongo.collection('store',collection=>{
-		return collection.countDocuments(); // store count for get max id
-	},count=>{
-		// 1. insert DB store
-		storeId = count + 1;
-		mongo.insert('store',{
-				id:storeId,
-				token:storeToken
-			})
-		.then(()=>{
-			// 2. insert DB store session with type AdminAnnonymous
-			const sessionToken = randomToken();
-			mongo.insert('session',{
-					token:sessionToken,
-					type:SESSION_ADMIN_ANNON, // visitoradmin
-					userId:''
-				}, storeId)
+function createStore(){
+	return new Promise((fullfill, reject)=>{
+		var storeId = 1;
+		const storeToken = randomToken();
+		mongo.collection('store',collection=>{
+			return collection.countDocuments(); // store count for get max id
+		},count=>{
+			// 1. insert DB store
+			storeId = count + 1;
+			mongo.insert('store',{
+					id:storeId,
+					token:storeToken
+				})
 			.then(()=>{
-				// final result
-				callback({
-					store:storeToken,
-					session:sessionToken,
-					result:'ok'
-				});
-				// 3. log
-				mongo.log(storeId, 'create store', storeToken, 'annonymus');
-			});
+				// 2. insert DB store session with type AdminAnnonymous
+				const sessionToken = randomToken();
+				mongo.insert('session',{
+						token:sessionToken,
+						type:SESSION_ADMIN_ANNON, // visitoradmin
+						userId:''
+					}, storeId)
+				.then(()=>{
+					// final result
+					fullfill({
+						store:storeToken,
+						session:sessionToken,
+						result:'ok'
+					});
+					// 3. log
+					mongo.log(storeId, 'create store', storeToken, 'annonymus');
+				})
+				.catch(reject);
+			})
+			.catch(reject);
 		});
 	});
 }
@@ -67,6 +71,12 @@ function createStore(callback){
 // encapsulated check storeToken and sessionToken exists
 function checkStore(storeToken, sessionToken){
 	return new Promise((fullfill, reject)=>{
+		if(storeToken === undefined || storeToken === null || storeToken === ''){
+			reject({
+				error:'Store token empty'
+			});
+			return;			
+		}
 		// step 1 get using parallel store and user info
 		var storeObject = null;
 		var sessionObject = null;
@@ -134,75 +144,85 @@ function checkStore(storeToken, sessionToken){
 //7. if userId has rol Admin
 //7.1 mark config with admin flag
 //8. if userId has rol visitor, omit config.chat_quick_answer
-function getStore(storeToken, sessionToken = '', callback){
-	// step 1 get using parallel store and user info
-	checkStore(storeToken, sessionToken)
-		.then(([storeObject, sessionObject])=>{
-			// step 2 get collections for all object filtered per store
-			//console.log('Step2', storeObject, sessionObject);
-			var redux = new Object();
-			var waiting = 3;
-			const nextStep = ()=>{
-				waiting--;
-				if(waiting == 0){
-					// after get alls collections
-					callback(redux);
-				}
-			};
-			// get product, category and config
-			const storeId = storeObject.id;
-			mongo.product(storeId).then(result=>{
-				redux.product = result;
-			})
-			.finally(nextStep);
-			mongo.category(storeId).then(result=>{
-				redux.category = result;
-			})
-			.finally(nextStep);
-			mongo.config(storeId).then(result=>{
-				redux.config = result;
-			})
-			.finally(nextStep);
+function getStore(storeToken, sessionToken = ''){
+	return new Promise((fullfill, reject)=>{
+		// step 1 get using parallel store and user info
+		checkStore(storeToken, sessionToken)
+			.then(([storeObject, sessionObject])=>{
+				// step 2 get collections for all object filtered per store
+				//console.log('Step2', storeObject, sessionObject);
+				var redux = new Object();
+				var waiting = 3;
+				const nextStep = ()=>{
+					waiting--;
+					if(waiting == 0){
+						// after get alls collections
+						fullfill(redux);
+					}
+				};
+				// get product, category and config
+				const storeId = storeObject.id;
+				mongo.product(storeId).then(result=>{
+					redux.product = result;
+				})
+				.finally(nextStep);
+				mongo.category(storeId).then(result=>{
+					redux.category = result;
+				})
+				.finally(nextStep);
+				mongo.config(storeId).then(result=>{
+					redux.config = result;
+				})
+				.finally(nextStep);
 
-			// cart, order, chat
-			if(sessionObject !== null){
-				waiting += 3;
-				const sessionToken = sessionObject.token;
-				mongo.cart(storeId, sessionToken).then(result=>{
-					redux.cart = result;
-				})
-				.finally(nextStep);
-				mongo.order(storeId, sessionToken).then(result=>{
-					redux.order = result;
-				})
-				.finally(nextStep);
-				mongo.chat(storeId, sessionToken).then(result=>{
-					redux.chat = result;
-				})
-				.finally(nextStep);
-			}
-			// TODO build redux object for admin
-		}).catch(callback);
+				// cart, order, chat
+				if(sessionObject !== null){
+					waiting += 3;
+					const sessionToken = sessionObject.token;
+					mongo.cart(storeId, sessionToken).then(result=>{
+						redux.cart = result;
+					})
+					.finally(nextStep);
+					mongo.order(storeId, sessionToken).then(result=>{
+						redux.order = result;
+					})
+					.finally(nextStep);
+					mongo.chat(storeId, sessionToken).then(result=>{
+						redux.chat = result;
+					})
+					.finally(nextStep);
+				}
+				// TODO build redux object for admin
+			}).catch(reject);	
+	});
 }
 
 // update info database
-function updateStore(storeToken, sessionToken, action, key, object, callback){
-	checkStore(storeToken, sessionToken)
-		.then(([storeObject, sessionObject])=>{
-			const storeId = storeObject.id;
-			switch(action){
-				case 'product':
-					mongo.insert('product',object,storeId)
-						.then(insertedId=>{
-							callback({
-								result:'ok'
-							});
-							mongo.log('Product created', object.name, storeId);
-						})
-						.catch(callback);
-					break;
-			}
-		}).catch(callback);
+function updateStore(storeToken, sessionToken, action, key, object){
+	return new Promise((fullfill, reject)=>{
+		checkStore(storeToken, sessionToken)
+			.then(([storeObject, sessionObject])=>{
+				const storeId = storeObject.id;
+				switch(action){
+					case 'product':
+						mongo.insert('product',object,storeId)
+							.then(insertedId=>{
+								fullfill({
+									result:'ok'
+								});
+								mongo.log('Product created', object.name, storeId);
+							})
+							.catch(reject);
+						break;
+					default:
+						reject({
+							error:'Undefined action'
+						});
+						mongo.log('Error undefined action', object, storeId);
+						break;
+				}
+			}).catch(reject);
+	});
 }
 
 // exports
@@ -211,9 +231,3 @@ module.exports = {
 	getStore:getStore,
 	updateStore:updateStore
 }
-
-// MAIN test
-createStore(console.log);
-updateStore('m1dkvbyuh8dmckld3l0fgm8lup1h2a6', 'iamkfni2dyslzwr0i9x18lj1w8v7jscno',
-	'product', '', {name:'test'},console.log);
-getStore('m1dkvbyuh8dmckld3l0fgm8lup1h2a6', 'iamkfni2dyslzwr0i9x18lj1w8v7jscno', console.log);
