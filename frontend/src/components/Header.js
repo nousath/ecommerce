@@ -26,7 +26,8 @@ class HeaderTitle extends React.Component{
 	render(){
 		const state = reduxGetState();
 		const navigate = state.navigate;
-		const storeName = state.config.store.name;
+		const storeName = 
+			(state.config.store !== undefined) ? state.config.store.name : '';
 		return <h1>{
 			storeName + 
 			(navigate !== "" && navigate !== undefined ? ' > '+navigate : '')}</h1>; // breadcumbs

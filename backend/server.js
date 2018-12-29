@@ -41,8 +41,8 @@ server.post('/getStore',(req,res)=>{
 // update store info
 server.post('/updateStore',(req,res)=>{
   const data = req.body;
-  console.log('updateStore request', data);
-  ecommerce.updateStore(data.storeToken, data.sessionToken, data.action, data.key, data.object)
+  console.log('updateStore request', data.action);
+  ecommerce.updateStore(data.storeToken, data.sessionToken, data.action)
   	.then(result=>{
   		console.log('updateStore',result);
   		res.json(result);

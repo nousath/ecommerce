@@ -3,6 +3,7 @@ API functions for access on lambda
 encapsulated database access, authenticate user and create log access
 */
 const mongo = require('./mongodb.js');
+const reduxAction = require('./actions.js').reduxAction;
 
 // useful function for generate random, https://gist.github.com/6174/6062387
 function randomToken() {
@@ -58,7 +59,7 @@ function createStore(){
 					.catch(reject);
 			})
 			.catch(reject);
-		});
+		},reject);
 	});
 }
 
@@ -204,7 +205,11 @@ function getStore(storeToken, sessionToken = ''){
 				})
 				.finally(nextStep);
 				mongo.config(storeId).then(result=>{
-					redux.config = result;
+					if(result.length == 0){
+						redux.config = {}
+					}else{
+						redux.config = result[0];
+					}
 				})
 				.finally(nextStep);
 				// cart, order, chat
@@ -227,29 +232,19 @@ function getStore(storeToken, sessionToken = ''){
 }
 
 // update info database
-function updateStore(storeToken, sessionToken, action, key, object){
+function updateStore(storeToken, sessionToken, action){
 	return new Promise((fullfill, reject)=>{
 		checkStore(storeToken, sessionToken, false)
 			.then(([storeObject, sessionObject])=>{
-				const storeId = storeObject.id;
-				switch(action){
-					case 'product':
-						mongo.insert('product',object,storeId)
-							.then(insertedId=>{
-								fullfill({
-									result:'ok'
-								});
-								mongo.log('Product created', object.name, storeId);
-							})
-							.catch(reject);
-						break;
-					default:
-						reject({
-							error:'Undefined action'
-						});
-						mongo.log('Error undefined action', object, storeId);
-						break;
-				}
+				// execute same redux frontend actions on database
+				reduxAction(storeObject,sessionObject,action)
+					.then(()=>{
+						fullfill({
+							result:'ok'
+						})
+					})
+					.catch(reject);
+
 			}).catch(reject);
 	});
 }

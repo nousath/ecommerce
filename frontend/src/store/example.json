@@ -245,7 +245,7 @@
 			user:"Name"
 		}
 	],
-	api:{
+	backend:{
 		storeToken:"",
 		sessionToken:""
 	}

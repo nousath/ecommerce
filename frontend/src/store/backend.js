@@ -33,56 +33,53 @@ wrong information will be show it to the user
 however making a good testing process there will be few errors.
 and normally 2% (or less) request backend will fail then dont force user wait in other 98% request
  */
-import { reduxGetState, reduxCreateStore, reduxDispatch, reduxSubscribe } from '../store/redux.js';
-import { backendSession } from '../actions/backend.js';
+import { reduxGetState, reduxCreateStore, reduxSubscribe } from '../store/redux.js';
 const lodash = require('lodash');
 const axios = require('axios');
 const apiurl = 'http://localhost:3000';
-const sessionTokenItem = 'buffer1'; // save localStorage with other name
+// save localStorage with other name
+const sessionTokenItem = 'buffer1'; 
 const storeTokenItem = 'buffer2';
-const reduxTokenItem = 'buffer3';
-
+const reduxTokenItem = 'temp1';
 
 // indexonload function, search sessionToken and storeToken for localStorage
 // if doesnt exists, generate request for create it
 export function backendLoad(){
 	return new Promise((fullfill,reject)=>{	
-		// load redux object from localStorage
-		const reduxObject = localStorage.getItem(reduxTokenItem);
-		if(reduxObject === null || reduxObject === undefined || reduxObject === "undefined"){
-			reduxCreateStore();
-		}else{
-			reduxCreateStore(JSON.parse(reduxObject));
-		}
+		// after create or get store
+		const nextStep = (result)=>{
+			var reduxObject = '';
+			// not info from backend
+			if(result === '' || result === undefined || result === null){
+				const offlineInfo = localStorage.getItem(reduxTokenItem);
+				if(offlineInfo !== null && offlineInfo !== undefined && offlineInfo !== "undefined"){
+					reduxObject = JSON.parse(offlineInfo);
+				}
+			}else{
+				reduxObject = result;
+			}
+			reduxCreateStore(reduxObject);
+			fullfill();
+			// subscribe localstorage
+			reduxSubscribe(
+					lodash.throttle(()=>{
+						localStorage.setItem(reduxTokenItem,JSON.stringify(reduxGetState()));
+					},1500));
+		};
 		// check backend for last info
 		const storeToken = localStorage.getItem(storeTokenItem);
 		const sessionToken = localStorage.getItem(sessionTokenItem);
-		// subscribe localstorage
-		const nextStep = (result)=>{
-			fullfill(result);
-			reduxSubscribe(
-					lodash.throttle(()=>{
-						localStorageSave();
-					},1500));
-		};
 		if(storeToken === null || storeToken === undefined || storeToken === "undefined"){ // does exists
 			createStore()
 				.then(nextStep)
 				.catch(reject);
 		}else{
-			// save on redux object
-			reduxDispatch(backendSession(storeToken,sessionToken));
 			// getStoreInfo
-			getStore()
+			getStore(storeToken,sessionToken)
 				.then(nextStep)
 				.catch(reject);
 		}
 	});
-}
-
-// redux suscribe event save to localStorage
-function localStorageSave(){
-	localStorage.setItem(reduxTokenItem,JSON.stringify(reduxGetState()));
 }
 
 function createStore(){
@@ -92,12 +89,16 @@ function createStore(){
 			if(data.result === 'ok'){
 				const storeToken = data.storeToken;
 				const sessionToken = data.sessionToken;
-				// save redux object
-				reduxDispatch(backendSession(storeToken,sessionToken));
 				// save localStorage
 				localStorage.setItem(storeTokenItem,storeToken);
 				localStorage.setItem(sessionTokenItem,sessionToken);
-				fullfill();
+				fullfill({
+					// default redux object
+					backend:{
+						storeToken:storeToken,
+						sessionToken:sessionToken
+					}
+				});
 			}else{
 				reject();
 			}
@@ -105,19 +106,44 @@ function createStore(){
 	});
 }
 
-export function updateStore(key, object){
+// receive redux state and actions from reducers
+export function updateStore(state, action){
+	return new Promise((fullfill,reject)=>{
+		if(action.type.search('@@redux') !== -1){
+			return;
+		}
+		const storeToken = state.storeToken;
+		const sessionToken = state.sessionToken;
 
+		// TODO, typing actions wait until end typing
+		// TODO, save actions to indexedDB and send groups to backend
+
+		api('updateStore',{
+			storeToken:storeToken,
+			sessionToken:sessionToken,
+			action:action
+		})
+		.then(fullfill)
+		.catch((err)=>{
+			console.log('update error',err);
+			reject();
+		});
+	});
 }
 
-function getStore(){
+function getStore(storeTokenParam = '', sessionTokenParam = ''){
 	return new Promise((fullfill,reject)=>{
-		const state = reduxGetState();
-		const storeToken = state.backend.storeToken;
-		const sessionToken = state.backend.sessionToken;
+		var storeToken = storeTokenParam;
+		var sessionToken = sessionTokenParam;
+		if(storeToken === ''){
+			const state = reduxGetState();
+			storeToken = state.backend.storeToken;
+			sessionToken = state.backend.sessionToken;
+		}
 		api('getStore',{
-			storeToken:storeToken,
-			sessionToken:sessionToken
-		})
+				storeToken:storeToken,
+				sessionToken:sessionToken
+			})
 			.then(response=>{
 				const data = response.data;
 				fullfill(data);
@@ -126,7 +152,12 @@ function getStore(){
 	});
 }
 
+// api create
+const httpClient = axios.create();
+httpClient.defaults.timeout = 1000;
+httpClient.defaults.baseURL = apiurl
+
 // send api
 function api(action, data=''){
-	return axios.post(apiurl+'/'+action, data);
+	return httpClient.post(action, data);
 }

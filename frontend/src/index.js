@@ -2,10 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import App from './App.js';
-import { reduxSubscribe } from './store/redux.js';
+import { reduxSubscribe, reduxGetState } from './store/redux.js';
 import { backendLoad } from './store/backend.js';
 
 const render = () => {
+  console.log("redux state render ", reduxGetState());
   return ReactDOM.render(<App />, document.getElementById("root"));
 };
 

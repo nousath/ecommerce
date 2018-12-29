@@ -140,7 +140,7 @@ function DBcreateIndex(collectionName, index){
 //DBcreateStructure(); // just call one time
 
 // encapsulated functions connect db collection of mongodb driver
-function DBcollection(collectionName, mongofunction = '', mongocallback = ''){
+function DBcollection(collectionName, mongofunction = '', mongocallback = '', mongoerror = ''){
 	if(mongofunction === ''){
 		// create a promise
 		return new Promise((fullfill,reject) => {
@@ -162,11 +162,14 @@ function DBcollection(collectionName, mongofunction = '', mongocallback = ''){
 	}else{
 		// use the promise, for encapsulated DBDisconnect and DBerror functionality
 		DBcollection(collectionName).then(collection=>{
-			mongofunction(collection). // find, insert, update, etc
-			then(mongocallback) // result of mongodb function
-			.catch(DBError)
+			mongofunction(collection) // find, insert, update, etc
+			.then(mongocallback) // result of mongodb function
+			.catch((err)=>{
+				DBError(err); // log
+				mongoerror(err);
+			})
 			.finally(DBdisconnect);
-		}).catch(DBError);
+		}).catch(mongoerror);
 	}
 }
 
@@ -189,10 +192,26 @@ function DBLog(action, detail="", storeId = '', user = ""){
 		}, storeId);
 }
 
+// remove attr _id, storeId, sessionToken
+function DBCleanInternals(result){
+	if(result === undefined || result === '' || result === null){
+		return result;
+	}else{
+		return result.map((doc)=>{
+			const forDelete = ['_id','storeId','sessionToken'];
+			for(var i = 0; i < forDelete.length; i++){
+				delete doc[forDelete[i]];
+			}
+			return doc;
+		});
+	}	
+}
+
 // encapsulated search one row into collection
 function DBDocumentExists(collectionName, findCriteria){
 	return new Promise((fullfill, reject)=>{
-		DBcollection(collectionName,collection=>{
+		DBcollection(collectionName
+		,collection=>{
 			return collection.findOne(findCriteria);
 		},result=>{
 			if(result !== null){
@@ -202,7 +221,7 @@ function DBDocumentExists(collectionName, findCriteria){
 				DBLog('DB '+collectionName+' not found', findCriteria);
 				reject(collectionName+' not found');
 			}
-		});
+		},reject);
 	});
 }
 
@@ -231,7 +250,9 @@ function DBSearchByStore(collectionName, storeId){
 		}else{
 			DBcollection(collectionName,collection=>{
 				return collection.find({storeId:storeId}).toArray();
-			},fullfill);
+			},(result=>{
+				fullfill(DBCleanInternals(result));
+			}),reject);
 		}
 	});
 }
@@ -264,7 +285,9 @@ function DBSearchBySession(collectionName, storeId, sessionToken){
 			DBcollection(collectionName,collection=>{
 				return collection.find({sessionToken:sessionToken}).toArray();
 				// NOTE: sessionId is unique key, indepent of store
-			},fullfill);
+			},(result=>{
+				fullfill(DBCleanInternals(result));
+			}),reject);
 		}
 	});
 }
@@ -314,12 +337,43 @@ function DBinsert(collectionName, object, storeId = ''){
 					DBLog('DB error insert', collectionName, storeId);
 				}
 			}
-		});
+		},reject);
 	});
 }
 
-function DBupdate(){
-
+function DBupdate(collectionName, find, set, storeId = '',upsert = false){
+	return new Promise((fullfill,reject)=>{
+		DBcollection(collectionName,collection=>{
+			if(storeId !== ''){
+				find.storeId = storeId
+			}
+			return collection.updateOne(find,
+				{
+					$set:set
+				},
+				// options
+				{
+					upsert:upsert
+				});
+		},result=>{
+			if(result.matchedCount > 1){
+				// it was the first updated but there are several register to update
+				DBLog('DB update '+collectionName+' error',find, storeId);
+			}
+			if(result.modifiedCount > 0){
+				fullfill();
+			}else if(upsert){
+				// case if doesnt exist then insert it
+				if(result.upsertedId !== '' && result.upsertedId !== undefined && result.upsertedId !== null){
+					fullfill();						
+				}else{
+					reject();
+				}
+			}else{
+				reject();
+			}
+		},reject);
+	});
 }
 
 // exports

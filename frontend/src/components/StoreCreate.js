@@ -1,5 +1,5 @@
 import React from 'react';
-import { reduxDispatch } from '../store/redux.js';
+import { reduxDispatch, reduxGetState } from '../store/redux.js';
 import '../css/StoreCreate.scss';
 import { storeName } from '../actions/config.js';
 import ProductUpload from '../components/ProductUpload.js';
@@ -10,7 +10,8 @@ class StoreCreate extends React.Component{
 		reduxDispatch(storeName(event.target.value));
 	}
 	render(){
-		const storeName = this.props.storeName;
+		const state = reduxGetState();
+		const storeName = (state.config.store !== undefined) ? state.config.store.name : '';
 		return <div className="page-create">
 				<h1>Welcome to your ecommerce</h1>
 				<input type="text" name="StoreName" placeholder="Store Name" value={storeName} onChange={this.editStoreNameHandler.bind(this)} />
