@@ -189,7 +189,7 @@ function getStore(storeToken, sessionToken = ''){
 				};
 				// api options
 				const sessionToken = sessionObject.token;
-				redux.api = {
+				redux.backend = {
 					sessionToken:sessionToken,
 					storeToken:storeObject.token
 				};

@@ -1,6 +1,6 @@
 import React from 'react';
 import './css/App.scss';
-import redux from './store'; 
+import { reduxGetState } from './store/redux.js'; 
 import _ from 'lodash'; 
 // typical store, call it different for dont confuse concept store from ecommerce
 import Header from './components/Header.js'
@@ -10,7 +10,7 @@ import Content from './components/Content.js'
 // main APP
 class App extends React.Component {
   render() {
-  	const state = redux.getState();
+  	const state = reduxGetState();
   	const newStore = _.isEmpty(state.products);
     return [
 	      <Header newStore={newStore}></Header>,

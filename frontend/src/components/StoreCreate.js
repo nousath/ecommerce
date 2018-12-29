@@ -1,5 +1,5 @@
 import React from 'react';
-import redux from '../store';
+import { reduxDispatch } from '../store/redux.js';
 import '../css/StoreCreate.scss';
 import { storeName } from '../actions/config.js';
 import ProductUpload from '../components/ProductUpload.js';
@@ -7,7 +7,7 @@ import ProductUpload from '../components/ProductUpload.js';
 // initial ui for create a new store
 class StoreCreate extends React.Component{
 	editStoreNameHandler(event){
-		redux.dispatch(storeName(event.target.value));
+		reduxDispatch(storeName(event.target.value));
 	}
 	render(){
 		const storeName = this.props.storeName;

@@ -1,5 +1,5 @@
 import React from 'react';
-import redux from '../store/';
+import { reduxGetState } from '../store/redux.js';
 import '../css/Header.scss';
 import chatimg from '../img/chat.png';
 import chatimgselected from '../img/chat_selected.png';
@@ -24,7 +24,7 @@ class Header extends React.Component{
 
 class HeaderTitle extends React.Component{
 	render(){
-		const state = redux.getState();
+		const state = reduxGetState();
 		const navigate = state.navigate;
 		const storeName = state.config.store.name;
 		return <h1>{

@@ -1,5 +1,5 @@
 import React from 'react';
-import redux from '../store/';
+import { reduxGetState } from '../store/redux.js';
 import '../css/Content.scss';
 import StoreCreate from '../components/StoreCreate.js'
 
@@ -7,7 +7,7 @@ import StoreCreate from '../components/StoreCreate.js'
 // main, it is like a router, changing base on store.navigate
 class Content extends React.Component{
 	render(){
-		const state = redux.getState();
+		const state = reduxGetState();
 		var gui = "";
 		if(this.props.newStore){
 			gui = <StoreCreate storeName={state.config.store.name}></StoreCreate>;

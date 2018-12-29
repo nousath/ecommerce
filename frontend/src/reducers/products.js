@@ -1,9 +1,9 @@
-import { PRODUCT_FILE } from '../actions/constants.js';
+import { actionsType } from '../actions/constants.js';
 import _ from 'lodash';
 
 export function productsReducers(state = {}, action) {
     switch (action.type) {
-    	case PRODUCT_FILE:
+    	case actionsType.PRODUCT_FILE:
     		console.log("filename: ", action.payload.name);
     		console.log("file: ", action.payload.file);
     		// create new product

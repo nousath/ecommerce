@@ -1,4 +1,4 @@
-import { CONFIG_STORE_NAME } from '../actions/constants.js';
+import { actionsType } from '../actions/constants.js';
 
 // default config for avoid undefined erros
 const emptyConfig = {
@@ -86,7 +86,7 @@ const emptyConfig = {
 
 export function configReducers(state = emptyConfig, action) {
     switch (action.type) {
-    	case CONFIG_STORE_NAME:
+    	case actionsType.CONFIG_STORE_NAME:
     		return {
     			...state,
     			store:{

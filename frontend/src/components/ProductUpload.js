@@ -1,5 +1,5 @@
 import React from 'react';
-import redux from '../store';
+import { reduxDispatch } from '../store/redux.js';
 import { productFile } from '../actions/products.js';
 
 // UI for upload new product, just input file
@@ -24,7 +24,7 @@ class ProductUpload extends React.Component{
 			error:false
 		};
 	    reader.onload = ()=>{
-	   		redux.dispatch(productFile(file.name, reader.result));
+	   		reduxDispatch(productFile(file.name, reader.result));
 	   		stateFiles[posFile].status = 100;
 	    };
 	    reader.onerror = ()=>{
