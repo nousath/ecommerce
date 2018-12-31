@@ -1,11 +1,14 @@
 import { actionsType } from '../actions/constants.js';
 import { notificationClock } from '../actions/notifications.js';
-import { reduxDispatch } from '../store/redux.js';
+import { reduxDispatch, reduxGetState } from '../store/redux.js';
 
 // show error one per one
 function clock(){
     setTimeout(()=>{
-        reduxDispatch(notificationClock());   
+        const state = reduxGetState();
+        if(state.notifications.length > 0){
+            reduxDispatch(notificationClock());
+        }   
     }, 5000);
 }
 clock();

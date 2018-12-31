@@ -2,10 +2,31 @@
 import { actionsType } from '../actions/constants.js';
 
 // upload file
-export const productFile = (name, file) => ({
-  type: actionsType.PRODUCT_FILE,
+export const productCreate = (id,name) => ({
+  type: actionsType.PRODUCT_CREATE,
+  payload:{
+    id,
+    name 
+  }
+})
+
+export const productUploadProgress = (id, progress) =>({
+  type: actionsType.PRODUCT_UPLOAD_PROGRESS,
   payload: {
-  	name,
-  	file
+  	id,
+  	progress
+  }	
+})
+
+export const productUploadError = (id) =>({
+  type: actionsType.PRODUCT_UPLOAD_ERROR,
+  payload: id
+})
+
+export const productUploadComplete = (id, token) => ({
+  type: actionsType.PRODUCT_UPLOAD_COMPLETE,
+  payload: {
+  	id,
+  	token
   }
 })

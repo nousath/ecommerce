@@ -116,9 +116,6 @@ function createStore(){
 // receive redux state and actions from reducers
 export function updateStore(state, action){
 	return new Promise((fullfill,reject)=>{
-		if(action.type.search('@@redux') !== -1){
-			return;
-		}
 		const storeToken = state.storeToken;
 		const sessionToken = state.sessionToken;
 

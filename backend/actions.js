@@ -7,11 +7,27 @@ function reduxAction(storeObject, sessionObject, action){
 		const storeId = storeObject.id;
 		const payload = action.payload;
 		switch(action.type){
-			case 'PRODUCT_FILE': // new product
-				mongo.insert('product',payload,storeId)
+			case 'PRODUCT_CREATE': // new product
+				mongo.insert('product',{
+						id:payload.id,
+						name:payload.name
+					},storeId)
 					.then(insertedId=>{
-						fullfill();			
-						mongo.log('Product created', object.name, storeId);
+						fullfill();	
+						mongo.log('Product created', payload.name, storeId);
+					})
+					.catch(reject);
+				break;
+			case 'PRODUCT_UPLOAD_COMPLETE': // save token
+				mongo.update('product',{id:payload.id},{"img.token":payload.token},storeId)
+					.then(fullfill)
+					.catch(reject);
+				break;
+			case 'PRODUCT_UPLOAD_ERROR': // error uploading
+				mongo.update('product',{id:payload.id},{"img.error":true},storeId)
+					.then(insertedId=>{
+						fullfill();	
+						mongo.log('Product upload error', payload.name, storeId);
 					})
 					.catch(reject);
 				break;

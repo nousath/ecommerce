@@ -153,6 +153,13 @@ function checkStore(storeToken, sessionToken, createSessionIfFail = false){
 	});
 }
 
+// convert array to object for redux managment
+function arrayToObject(result){
+	return result.reduce(function ( total, current ) {
+	    total[ current.id ] = current;
+	    return total;
+	}, {});
+}
 
 // MAIN function, requested at software start, all frontend will build it base on this
 // return redux object
@@ -197,11 +204,11 @@ function getStore(storeToken, sessionToken = ''){
 				// get product, category and config
 				const storeId = storeObject.id;
 				mongo.product(storeId).then(result=>{
-					redux.product = result;
+					redux.products = arrayToObject(result);
 				})
 				.finally(nextStep);
 				mongo.category(storeId).then(result=>{
-					redux.category = result;
+					redux.categories = arrayToObject(result);
 				})
 				.finally(nextStep);
 				mongo.config(storeId).then(result=>{
@@ -218,11 +225,11 @@ function getStore(storeToken, sessionToken = ''){
 				})
 				.finally(nextStep);
 				mongo.order(storeId, sessionToken).then(result=>{
-					redux.order = result;
+					redux.orders = arrayToObject(result);
 				})
 				.finally(nextStep);
 				mongo.chat(storeId, sessionToken).then(result=>{
-					redux.chat = result;
+					redux.chats = arrayToObject(result);
 				})
 				.finally(nextStep);
 				// TODO build redux object for admin
@@ -249,10 +256,35 @@ function updateStore(storeToken, sessionToken, action){
 	});
 }
 
+// save files into mongodb for easy download multiple products
+function uploadFile(filecontent, storeToken, sessionToken){
+	return new Promise((fullfill,reject)=>{
+		checkStore(storeToken, sessionToken, false)
+			.then(([storeObject, sessionObject])=>{
+				const filename = randomToken();
+				const storeId = storeObject.id;
+				mongo.insert('file',{
+						token:randomToken,
+						file:filecontent
+					},storeId)
+				.then((result)=>{
+					fullfill(filename);
+				})
+				.catch(reject)
+			})
+			.catch(reject)
+	});
+}
+
+function getFiles(storeToken, sessionToken){
+
+}
+
 // exports
 module.exports = {
 	createStore:createStore,
 	getStore:getStore,
 	updateStore:updateStore,
-	randomToken:randomToken
+	uploadFile:uploadFile,
+	getFiles:getFiles
 }

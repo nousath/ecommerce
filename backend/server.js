@@ -57,18 +57,18 @@ server.post('/updateStore',jsonParser,(req,res)=>{
 
 // upload file
 server.post('/upload', (req, res) => {
-  new formidable.IncomingForm().parse(req, (err, fields, files) => {
+  new formidable.IncomingForm().parse(req, (err, data) => {
     if (err) {
       res.status(500).send(err)
     }
-    console.log('Fields', fields)
-    console.log('Files', files)
-    files.map(file => {
-      console.log(file)
-    });
-    res.json({
-        file: filename
-      })
+    ecommerce.uploadFile(data.file,data.storeToken,data.sessionToken)
+      .then(result=>{
+        console.log('updateFile',result);
+        res.json(result);
+      }).catch((err)=>{
+        res.status(500).end();
+        console.log('updateFile error',err);
+      });
   })
 })
 

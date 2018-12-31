@@ -4,7 +4,11 @@
 		1:{
 			id:1,
 			name:"Product X",
-			img:"products/car-parts1.jpg",
+			img:{
+				token:"",
+				uploading:0,
+				uploadError:false
+			}
 			price:20000,
 			description:"",
 			available:true,
