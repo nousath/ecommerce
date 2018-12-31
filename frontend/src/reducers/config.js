@@ -1,6 +1,6 @@
 import { actionsType } from '../actions/constants.js';
 
-// default config for avoid undefined erros
+// default config for avoid undefined errors
 const emptyConfig = {
 	admin_user:true,
 	store:{

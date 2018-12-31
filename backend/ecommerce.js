@@ -253,5 +253,6 @@ function updateStore(storeToken, sessionToken, action){
 module.exports = {
 	createStore:createStore,
 	getStore:getStore,
-	updateStore:updateStore
+	updateStore:updateStore,
+	randomToken:randomToken
 }

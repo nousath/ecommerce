@@ -46,40 +46,47 @@ const reduxTokenItem = 'temp1';
 // if doesnt exists, generate request for create it
 export function backendLoad(){
 	return new Promise((fullfill,reject)=>{	
-		// after create or get store
-		const nextStep = (result)=>{
-			var reduxObject = '';
-			// not info from backend
-			if(result === '' || result === undefined || result === null){
-				const offlineInfo = localStorage.getItem(reduxTokenItem);
-				if(offlineInfo !== null && offlineInfo !== undefined && offlineInfo !== "undefined"){
-					reduxObject = JSON.parse(offlineInfo);
-				}
-			}else{
-				reduxObject = result;
-			}
-			reduxCreateStore(reduxObject);
-			fullfill();
-			// subscribe localstorage
-			reduxSubscribe(
-					lodash.throttle(()=>{
-						localStorage.setItem(reduxTokenItem,JSON.stringify(reduxGetState()));
-					},1500));
-		};
+		// case server is not responding
+		const notBackend = (err)=>{
+			loadRedux(); // create empty redux with localStorage
+			reject(err);
+		}
 		// check backend for last info
 		const storeToken = localStorage.getItem(storeTokenItem);
 		const sessionToken = localStorage.getItem(sessionTokenItem);
 		if(storeToken === null || storeToken === undefined || storeToken === "undefined"){ // does exists
 			createStore()
-				.then(nextStep)
-				.catch(reject);
+				.then(loadRedux)
+				.then(fullfill)
+				.catch(notBackend);
 		}else{
 			// getStoreInfo
 			getStore(storeToken,sessionToken)
-				.then(nextStep)
-				.catch(reject);
+				.then(loadRedux)
+				.then(fullfill)
+				.catch(notBackend);
 		}
 	});
+}
+
+// create redux object, after request info from backend
+function loadRedux(initialState){
+	var reduxObject = '';
+	// not info from backend
+	if(initialState === '' || initialState === undefined || initialState === null){
+		const offlineInfo = localStorage.getItem(reduxTokenItem);
+		if(offlineInfo !== null && offlineInfo !== undefined && offlineInfo !== "undefined"){
+			reduxObject = JSON.parse(offlineInfo);
+		}
+	}else{
+		reduxObject = initialState;
+	}
+	reduxCreateStore(reduxObject);
+	// subscribe localstorage
+	reduxSubscribe(
+			lodash.throttle(()=>{
+				localStorage.setItem(reduxTokenItem,JSON.stringify(reduxGetState()));
+			},1500));
 }
 
 function createStore(){
@@ -125,7 +132,6 @@ export function updateStore(state, action){
 		})
 		.then(fullfill)
 		.catch((err)=>{
-			console.log('update error',err);
 			reject();
 		});
 	});
@@ -159,5 +165,13 @@ httpClient.defaults.baseURL = apiurl
 
 // send api
 function api(action, data=''){
-	return httpClient.post(action, data);
+	return new Promise((fullfill, reject)=>{
+		httpClient.post(action, data)
+			.then(fullfill)
+			.catch(err=>{
+				// convert err object to text
+				reject(err.message);
+			});
+	});
+	
 }

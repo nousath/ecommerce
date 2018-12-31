@@ -9,6 +9,7 @@ import { chatsReducers } from '../reducers/chat.js'
 import { chatTypingReducers } from '../reducers/chatTyping.js'
 import { searchTypingReducers } from '../reducers/search.js'
 import { backendReducers } from '../reducers/backend.js'
+import { notificationsReducers } from '../reducers/notifications.js'
 
 export default combineReducers({
 	products:productsReducers,
@@ -20,5 +21,6 @@ export default combineReducers({
 	searchTyping:searchTypingReducers,
 	chatTyping:chatTypingReducers,
 	config:configReducers,
-	backend:backendReducers
+	backend:backendReducers,
+	notifications:notificationsReducers
 });

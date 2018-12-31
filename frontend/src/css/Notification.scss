@@ -1,0 +1,30 @@
+@import 'useful.scss';
+@import 'general.scss';
+
+$border:10px;
+$radius:5px;
+$color-error:red;
+$color-message:green;
+
+div.notification{
+	position:fixed;
+	z-index:3;
+	width:100%;
+	height:$bar-height / 2;
+	top:$bar-height + 1.5;
+	left:0px;
+	span, p, li{
+		color:white;
+	}
+	text-align:center;
+	.notificationError{
+		background-color:$color-error;
+		@include border-color($color-error,$border);
+		@include border-radius($radius);
+	}
+	.notificationMessage{
+		background-color:$color-message;
+		@include border-color($color-message,$border);
+		@include border-radius($radius);
+	}
+}

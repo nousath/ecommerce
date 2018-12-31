@@ -9,8 +9,8 @@ class Content extends React.Component{
 	render(){
 		const state = reduxGetState();
 		var gui = "";
-		if(this.props.newStore){
-			gui = <StoreCreate />;
+		if(this.props.storeNew){
+			gui = <StoreCreate storeName={this.props.storeName} />;
 		}else{
 			switch(state.navigate){
 				case "Chat":

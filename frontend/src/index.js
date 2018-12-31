@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import App from './App.js';
-import { reduxSubscribe, reduxGetState } from './store/redux.js';
+import App from './components/App.js';
+import { reduxSubscribe, reduxGetState, reduxDispatch } from './store/redux.js';
 import { backendLoad } from './store/backend.js';
+import { notificationError } from './actions/notifications.js';
 
 const render = () => {
   console.log("redux state render ", reduxGetState());
@@ -13,8 +14,8 @@ const render = () => {
 // request sessiontoken from localstorage, then request info from backend
 backendLoad()
 	.catch((err)=>{
-		console.log('reject',err);
-		console.trace();
+		// show Error to user
+		reduxDispatch(notificationError(err));
 	})
 	.finally(()=>{
 		render();

@@ -248,5 +248,15 @@
 	backend:{
 		storeToken:"",
 		sessionToken:""
-	}
+	},
+	notification:[
+		{
+			type:'E',
+			message:'Error',
+		},
+		{
+			type:'I',
+			message:'Info',
+		},
+	]
 }
