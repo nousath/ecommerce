@@ -36,6 +36,11 @@ function reduxAction(storeObject, sessionObject, action){
 					.then(fullfill)
 					.catch(reject);
 				break;
+			case 'NAVIGATE_CHANGE':
+				mongo.update('session',{token:sessionObject.token},{"navigate":payload})
+					.then(fullfill)
+					.catch(reject);
+				break;
 			default:
 				reject({
 					error:'Undefined action'

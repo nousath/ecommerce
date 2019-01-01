@@ -16,6 +16,7 @@
 - Chat with your customers
 - Orders management
 - Live notifications
+- API integrations with shopify
 
 ## Full-stack
 #### Frontend

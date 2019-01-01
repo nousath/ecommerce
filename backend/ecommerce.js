@@ -70,7 +70,8 @@ function createSession(rolType, storeId = '', userId = ''){
 		mongo.insert('session',{
 				token:sessionToken,
 				type:rolType, // visitoradmin
-				userId:userId
+				userId:userId,
+				navigate:''
 			}, storeId)
 		.then((insertedId)=>{
 			fullfill(sessionToken);
@@ -201,6 +202,8 @@ function getStore(storeToken, sessionToken = ''){
 					sessionToken:sessionToken,
 					storeToken:storeObject.token
 				};
+				// navigate
+				redux.navigate = sessionObject.navigate;
 				// get product, category and config
 				const storeId = storeObject.id;
 				mongo.product(storeId).then(result=>{
@@ -232,6 +235,7 @@ function getStore(storeToken, sessionToken = ''){
 					redux.chats = arrayToObject(result);
 				})
 				.finally(nextStep);
+
 				// TODO build redux object for admin
 			})
 			.catch(reject);	
