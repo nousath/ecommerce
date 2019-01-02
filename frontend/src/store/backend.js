@@ -54,14 +54,16 @@ export function backendLoad(){
 		// check backend for last info
 		const storeToken = localStorage.getItem(storeTokenItem);
 		const sessionToken = localStorage.getItem(sessionTokenItem);
-		if(storeToken === null || storeToken === undefined || storeToken === "undefined"){ // does exists
+		const location = window.location.pathname;
+		if((storeToken === null || storeToken === undefined || storeToken === "undefined") // not exists
+			&& (location === '/')){ 
 			createStore()
 				.then(loadRedux)
 				.then(fullfill)
 				.catch(notBackend);
 		}else{
 			// getStoreInfo
-			getStore(storeToken,sessionToken)
+			getStore(storeToken,sessionToken,location)
 				.then(loadRedux)
 				.then(fullfill)
 				.catch(notBackend);
@@ -92,10 +94,9 @@ function loadRedux(initialState){
 function createStore(){
 	return new Promise((fullfill,reject)=>{
 		api('createStore').then(response=>{
-			const data = response.data;
-			if(data.result === 'ok'){
-				const storeToken = data.storeToken;
-				const sessionToken = data.sessionToken;
+			if(response.result === 'ok'){
+				const storeToken = response.storeToken;
+				const sessionToken = response.sessionToken;
 				// save localStorage
 				localStorage.setItem(storeTokenItem,storeToken);
 				localStorage.setItem(sessionTokenItem,sessionToken);
@@ -134,7 +135,7 @@ export function updateStore(state, action){
 	});
 }
 
-function getStore(storeTokenParam = '', sessionTokenParam = ''){
+function getStore(storeTokenParam = '', sessionTokenParam = '', location = ''){
 	return new Promise((fullfill,reject)=>{
 		var storeToken = storeTokenParam;
 		var sessionToken = sessionTokenParam;
@@ -145,26 +146,31 @@ function getStore(storeTokenParam = '', sessionTokenParam = ''){
 		}
 		api('getStore',{
 				storeToken:storeToken,
-				sessionToken:sessionToken
+				sessionToken:sessionToken,
+				location:location
 			})
-			.then(response=>{
-				const data = response.data;
-				fullfill(data);
-			})
+			.then(fullfill)
 			.catch(reject);
 	});
 }
 
 // api create
 const httpClient = axios.create();
-httpClient.defaults.timeout = 1000;
+httpClient.defaults.timeout = 3000;
 httpClient.defaults.baseURL = apiurl
 
 // send api
 function api(action, data=''){
 	return new Promise((fullfill, reject)=>{
 		httpClient.post(action, data)
-			.then(fullfill)
+			.then((response)=>{
+				const data = response.data;
+				if(data.error !== '' && data.error !== undefined){
+					reject(data.error);
+				}else{
+					fullfill(data);	
+				}
+			})
 			.catch(err=>{
 				// convert err object to text
 				reject(err.message);

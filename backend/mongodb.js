@@ -24,7 +24,7 @@ function DBconnect(){
 		// if connection is already open
 		if(connection !== '' && connection !== undefined){
 			if(connection.isConnected()){
-				DBDebug('reuse dbInstance');
+				//DBDebug('reuse dbInstance');
 				fullfill(dbInstance);
 				//disconnect(); 
 				// NOTE; disconnect must be executed after all fullfill
@@ -68,16 +68,30 @@ function DBconnect(){
 	});	
 }
 
+var timerDisconnect = -1;
+
 // close the connection
 function DBdisconnect(){
 	countingActions--;
 	if(countingActions <= 0){
+		// wait if there are others petitions to database
 		DBDebug('DB disconnecting');
-		connection.close(false,()=>{
-			DBDebug('DB disconnect');
-		});	
+		timerDisconnect = setTimeout(()=>{
+			connection.close(false,()=>{
+				DBDebug('DB disconnect');
+			});
+		},1000);			
 	}else{
-		DBDebug('Waiting functions for disconnect '+ countingActions);
+		//DBDebug('Waiting functions for disconnect '+ countingActions);
+	}
+}
+
+// increment counting actions
+function DBcountingActionsIncrement(){
+	countingActions++;
+	if(timerDisconnect != -1){
+		clearTimeout(timerDisconnect);
+		timerDisconnect = -1;
 	}
 }
 
@@ -98,7 +112,7 @@ function DBcreateStructure(){
 			'chat','log','order','cart',
 			'config','product', 'category'];
 		collections.forEach(collectionName=>{
-			countingActions++;
+			DBcountingActionsIncrement();
 			db.createCollection(collectionName)
 				.then(()=>{
 					// create index by storeId
@@ -144,13 +158,14 @@ function DBcollection(collectionName, mongofunction = '', mongocallback = '', mo
 	if(mongofunction === ''){
 		// create a promise
 		return new Promise((fullfill,reject) => {
-			countingActions++; // for parallel executions and coordinate disconect function
+			DBcountingActionsIncrement(); // for parallel executions and coordinate disconect function
 			DBconnect().then((db)=>{
 				db.collection(collectionName, (err,collection)=>{
 					if(err){
 						DBError('get collection '+collectionName+ ' '+err);
 						reject();		
 					}else{
+						DBDebug('collection '+collectionName);
 						fullfill(collection);	
 					}
 				});
@@ -185,11 +200,18 @@ DBcollection('test',collection=>{
 
 // register log info
 function DBLog(action, detail="", storeId = '', user = ""){
-	DBinsert('log', {
-			action:action,
-			detail:detail,
-			user:user
-		}, storeId);
+	return new Promise((fullfill, reject)=>{
+		DBinsert('log', {
+				action:action,
+				detail:detail,
+				user:user
+			}, storeId)
+			.then(fullfill)
+			.catch(err=>{
+				// dont propagate error
+				DBError('log '+ err);
+			});
+	});
 }
 
 // remove attr _id, storeId, sessionToken
@@ -214,8 +236,7 @@ function DBDocumentExists(collectionName, findCriteria){
 		,collection=>{
 			return collection.findOne(findCriteria);
 		},result=>{
-			if(result !== null){
-				DBDebug(collectionName + ' found');
+			if(result !== null && result !== undefined){
 				fullfill(result);
 			}else{
 				DBLog('DB '+collectionName+' not found', findCriteria);
@@ -227,8 +248,9 @@ function DBDocumentExists(collectionName, findCriteria){
 
 
 // check if store exists, promise return store object
-function storeExists(storeToken){
-	return DBDocumentExists('store',{token:storeToken});
+function storeExists(storeToken, storeId = ''){
+	const criteria = storeId != '' ? {id:storeId} : {token:storeToken};
+	return DBDocumentExists('store',criteria);
 }
 
 // check if session exists, promise return store object
@@ -236,9 +258,9 @@ function sessionExists(sessionToken){
 	return DBDocumentExists('session',{token:sessionToken});
 }
 
-// check if session exists, promise return store object
-function userExists(userId){
-	return DBDocumentExists('user',{token:storeToken});	
+// check if store name exists
+function storeUrlExists(location){
+	return DBDocumentExists('store',{url:location});
 }
 
 // encapsulated search per storeId
@@ -251,6 +273,7 @@ function DBSearchByStore(collectionName, storeId){
 			DBcollection(collectionName,collection=>{
 				return collection.find({storeId:storeId}).toArray();
 			},(result=>{
+				DBDebug('Search by store '+collectionName);
 				fullfill(DBCleanInternals(result));
 			}),reject);
 		}
@@ -286,6 +309,7 @@ function DBSearchBySession(collectionName, storeId, sessionToken){
 				return collection.find({sessionToken:sessionToken}).toArray();
 				// NOTE: sessionId is unique key, indepent of store
 			},(result=>{
+				DBDebug('Search by session '+collectionName);
 				fullfill(DBCleanInternals(result));
 			}),reject);
 		}
@@ -328,6 +352,7 @@ function DBinsert(collectionName, object, storeId = ''){
 			}
 		},(result)=>{
 			if(result.result.ok === 1){
+				DBDebug('Insert '+collectionName);
 				fullfill(result.insertedId);	
 			}else{
 				reject({
@@ -344,7 +369,7 @@ function DBinsert(collectionName, object, storeId = ''){
 function DBupdate(collectionName, find, set, storeId = '',upsert = false){
 	return new Promise((fullfill,reject)=>{
 		DBcollection(collectionName,collection=>{
-			if(storeId !== ''){
+			if(storeId !== '' && collectionName !== 'store'){
 				find.storeId = storeId
 			}
 			return collection.updateOne(find,
@@ -359,6 +384,7 @@ function DBupdate(collectionName, find, set, storeId = '',upsert = false){
 			if(result.matchedCount > 1){
 				// it was the first updated but there are several register to update
 				DBLog('DB update '+collectionName+' error',find, storeId);
+				DBDebug('Update '+collectionName);
 			}
 			if(result.modifiedCount > 0){
 				fullfill();
@@ -382,6 +408,7 @@ module.exports = {
 	log:DBLog,
 	store:storeExists,
 	session:sessionExists,
+	storeUrl:storeUrlExists,
 	product:productSearch,
 	category:categorySearch,
 	config:configSearch,

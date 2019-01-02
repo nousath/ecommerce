@@ -17,43 +17,43 @@ class Content extends React.Component{
 	render(){
 		const state = reduxGetState();
 		var gui = "";
-		if(this.props.storeNew){
-			gui = <StoreCreate storeName={this.props.storeName} />;
+		if(state.config.admin_user === true){
+			switch(state.navigate){
+				case "Chat":
+					gui = <ChatAdmin></ChatAdmin>;
+					break;
+				case "Cart":
+					gui = <CartAdmin></CartAdmin>;
+					break;
+				case "Order":
+					gui = <OrderAdmin></OrderAdmin>;
+					break;
+				case "Config":
+					gui = <ConfigAdmin></ConfigAdmin>;
+					break;
+				default:
+					if(this.props.storeNew){
+						gui = <StoreCreate storeName={this.props.storeName} />;
+					}else{
+						gui = <Store></Store>;
+					}
+			}
 		}else{
-			if(state.config.admin_user === true){
-				switch(state.navigate){
-					case "Chat":
-						gui = <ChatAdmin></ChatAdmin>;
-						break;
-					case "Cart":
-						gui = <CartAdmin></CartAdmin>;
-						break;
-					case "Order":
-						gui = <OrderAdmin></OrderAdmin>;
-						break;
-					case "Config":
-						gui = <ConfigAdmin></ConfigAdmin>;
-						break;
-					default:
-						gui = <Store></Store>;
-				}
-			}else{
-				switch(state.navigate){
-					case "Chat":
-						gui = <Chat></Chat>;
-						break;
-					case "Cart":
-						gui = <Cart></Cart>;
-						break;
-					case "Order":
-						gui = <Order></Order>;
-						break;
-					case "Config":
-						gui = <Config></Config>;
-						break;
-					default:
-						gui = <Store></Store>;
-				}
+			switch(state.navigate){
+				case "Chat":
+					gui = <Chat></Chat>;
+					break;
+				case "Cart":
+					gui = <Cart></Cart>;
+					break;
+				case "Order":
+					gui = <Order></Order>;
+					break;
+				case "Config":
+					gui = <Config></Config>;
+					break;
+				default:
+					gui = <Store></Store>;
 			}
 		}
 		return <div className="content">

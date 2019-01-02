@@ -91,7 +91,8 @@ export function configReducers(state = emptyConfig, action) {
     			...state,
     			store:{
     				...state.store,
-    				name:action.payload
+    				name:action.payload.name,
+    				url:action.payload.url
     			}
     		};
         default:

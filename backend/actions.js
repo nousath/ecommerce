@@ -32,12 +32,21 @@ function reduxAction(storeObject, sessionObject, action){
 					.catch(reject);
 				break;
 			case 'CONFIG_STORE_NAME': // change store name
-				mongo.update('config',{},{"store.name":payload},storeId,true)
+				mongo.update('config',{},{"store.name":payload.name},storeId,true)
+					.then((result)=>{
+						mongo.update('store',{id:storeId},{"url":payload.url}, storeId)
+							.then(fullfill)
+							.catch(reject);
+					})
+					.catch(reject);
+				break;
+			case 'NAVIGATE_CHANGE': // user ui
+				mongo.update('session',{token:sessionObject.token},{"navigate":payload})
 					.then(fullfill)
 					.catch(reject);
 				break;
-			case 'NAVIGATE_CHANGE':
-				mongo.update('session',{token:sessionObject.token},{"navigate":payload})
+			case 'NOTIFICATION_ERROR_FRONTEND': // error user ui
+				mongo.log('Error UI', payload.message, storeId, sessionObject.userId)
 					.then(fullfill)
 					.catch(reject);
 				break;

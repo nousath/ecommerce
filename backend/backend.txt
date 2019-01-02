@@ -23,7 +23,7 @@ createStore() => returns {
 	3. call log function
 	NOTE: this function allow create store and products without email or sign up for UX and for show functionality and demos
 ---
-getStore(storeToken, sessionToken="") => returns {
+getStore(storeToken, sessionToken, location="") => returns {
 	complete redux object
 }
 	MAIN function, requested at software start, all frontend will build it base on this
@@ -32,10 +32,10 @@ getStore(storeToken, sessionToken="") => returns {
 	2. search DB product, filtered by storeId
 	3. search DB category filtered by storeId
 	4. search DB config filtered by storeId
-	5. if sessionId exists and get DB userId
-	5.1 search DB cart filtered by storeId and sessionId
-	5.2 search DB chat filtered by storeId and sessionId
-	5.3 search DB order filtered by storeId and sessionId
+	5. if sessionToken exists and get DB userId
+	5.1 search DB cart filtered by storeId and sessionToken
+	5.2 search DB chat filtered by storeId and sessionToken
+	5.3 search DB order filtered by storeId and sessionToken
 	6. if sessionToken does not exists create a new session for visitor
 	7. if userId has rol seller or Admin
 	7.1 search DB order filtered by storeId and status not canceled and not completed
@@ -44,27 +44,27 @@ getStore(storeToken, sessionToken="") => returns {
 	8. if userId has rol Admin
 	8.1 mark config with admin flag
 	9. if userId has rol visitor, omit config.chat_quick_answer
+	10. search DB config filtered by location or storeName
 ---
-updateStore(storeId, action, key = "", object, [sessionId]) => returns {
-	status:OK,
+updateStore(storeToken, sessionToken. action) => returns {
+	result:OK,
 	error:""
 }
+	NOTE: the param action will be the same from redux actions
 	PROCESS
-	1. check storeId on DB store
-	2. check collection exists
-	3. save info DB on table collection	if key is empty it will insert or key exist it will update
-	NOTE: the business or process logic will be execute on redux reductors, the result will be saved on redux and store and mongodb database
-	for safety reason the API will validate object is according to action and collection
+	1. check storeToken exists on DB store
+	2. check sessionToken exists on DB session
+	3. modify database like reducers
 	4. call log function
 ---
-createUser(email, hashpass, rol="Visitor", storeId, sessionId) =>returns {
+createUser(email, hashpass, rol="Visitor", storeToken, sessionToken) =>returns {
 		session:session.id
 	}
 	sign up process for admin or for visitors
 	PROCESS
 	1. check email user dont exists
-	2. check storeId exists
-	3. check sessionId exists and rol has right to create new user
+	2. check storeToken exists
+	3. check sessionToken exists and rol has right to create new user
 	4. insert DB user
 	5. call login process
 	6. call log function
@@ -80,10 +80,29 @@ login(email, hasspass, sessionOld = "") => returns {
 	4.2 insert DB session
 	5. call log function
 ---
-logout(sessionId)
+logout(sessionToken)
 	for visitor or registered user end the session
 	PROCESS
-	1. delete DB session filtered by sessionId
+	1. delete DB session filtered by sessionToken
+---
+uploadFile(storeToken, sessionToken, filecontent)=>returns {
+	filetoken
+}
+	PROCESS
+	1. compress file on frontend
+	2. check storeToken exists on DB store
+	3. check sessionToken exists on DB session
+	4. create a token for identify the file
+	5. save filecontent on DB file
+---
+getFile(storeToken)=>{
+	filetoken
+}
+	PROCESS
+	1. check storeToken exists on DB store
+	2. get product.img.token of store
+	3. download multiples files of store until 5mb
+	4. uncompress file on frontend
 ---
 maintenanceDB()
 	maintenance process every 7 days, internal not api
@@ -95,7 +114,7 @@ maintenanceDB()
 *** Websocket - Live notifications
 navigator javascript will create wss connections for send and receive live notifications
 ---
-chat(chatObject, sessionId)
+chat(chatObject, sessionToken)
 	after every message
 	NOTIFY
 	1. if chat.request send to all sellers or admin
@@ -103,7 +122,7 @@ chat(chatObject, sessionId)
 	2. if not chat.request send to the user
 	if user is not connected send email to user
 ---
-order(orderObject, sessionId)
+order(orderObject, sessionToken)
 	after every changed on order
 	NOTIFY
 	1. send to all sellers or admin
@@ -112,7 +131,7 @@ order(orderObject, sessionId)
 	2. send to the user
 	if status is completed or cancelled and user is not connected send email to user
 ---
-visitorNavigate(navigate,sessionId)
+visitorNavigate(navigate,sessionToken)
 	NOTIFY
 	1. if sellers or admin are connected send info about visitor navigation
 ---
@@ -125,9 +144,9 @@ collections with same redux JSON structure (see /store/example.json)  plus store
 - product
 - category
 - config
-- cart (plus sessionId)
-- order (plus sessionId)
-- chat (plus sessionId)
+- cart (plus sessionToken)
+- order (plus sessionToken)
+- chat (plus sessionToken)
 - log
 
 access control
@@ -135,6 +154,7 @@ access control
 	{
 		id
 		token
+		url
 		timestamp	
 	}
 - user // list user
@@ -145,7 +165,6 @@ access control
 		storeId
 		timestamp
 		lastlogin
-		storeId
 	}
 - session // login, logout control
 	{

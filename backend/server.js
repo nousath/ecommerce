@@ -23,7 +23,7 @@ server.post('/createStore',(req,res)=>{
   		console.log('createStore',result);
   		res.json(result);
   	}).catch((err)=>{
-  		res.status(500).end();
+  		res.json(err).end();
   		console.log('createStore error',err);
   	});
 });
@@ -31,13 +31,13 @@ server.post('/createStore',(req,res)=>{
 // get store info
 server.post('/getStore',jsonParser,(req,res)=>{
   const data = req.body;
-	ecommerce.getStore(data.storeToken, data.sessionToken)
+	ecommerce.getStore(data.storeToken, data.sessionToken, data.location)
   	.then(result=>{
   		console.log('getStore',result);
   		res.json(result);
   	}).catch((err)=>{
-  		res.status(500).end();
-  		console.log('getStore error',err);
+      console.log('getStore error',err);
+  		res.json(err).end();
   	});
 });
 
@@ -50,7 +50,7 @@ server.post('/updateStore',jsonParser,(req,res)=>{
   		console.log('updateStore',result);
   		res.json(result);
   	}).catch((err)=>{
-  		res.status(500).end();
+  		res.json(err).end();
   		console.log('updateStore error',err);
   	});
 });
@@ -66,7 +66,7 @@ server.post('/upload', (req, res) => {
         console.log('updateFile',result);
         res.json(result);
       }).catch((err)=>{
-        res.status(500).end();
+        res.json(err).end();
         console.log('updateFile error',err);
       });
   })

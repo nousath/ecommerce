@@ -12,45 +12,53 @@ import configimg from '../img/config.png';
 import configimgselected from '../img/config_selected.png';
 
 class Header extends React.Component{
+	navigateMenu(menu){
+		const state = reduxGetState();
+		if(state.navigate === menu){ // back to store
+			menu = '';
+		}
+		if(state.navigate !== menu){
+			reduxDispatch(navigateChange(menu));
+		}
+	}
 	render(){
 		return <div className="header">
 			<div className="menu">
-				<HeaderTitle storeNew={this.props.storeNew} storeName={this.props.storeName} />
-				<HeaderMenu storeNew={this.props.storeNew} />
+				<HeaderTitle storeNew={this.props.storeNew} 
+					storeName={this.props.storeName}
+					navigateMenu={this.navigateMenu} />
+				<HeaderMenu storeNew={this.props.storeNew}
+					navigateMenu={this.navigateMenu} />
 			</div>
 		</div>
 	}
 }
 
 class HeaderTitle extends React.Component{
+	navigateStore(){
+		this.props.navigateMenu('');
+	}
 	render(){
 		const state = reduxGetState();
 		const navigate = state.navigate;
-		return <h1>{this.props.storeName}
+		return <h1 onClick={this.navigateStore.bind(this)}>{this.props.storeName}
 			{(navigate !== "" && navigate !== undefined ? ' > '+navigate : '')}
 			</h1>; // breadcumbs
 	}
 }
 
-class HeaderMenu extends React.Component{
-	navigateMenu(menu){
-		const state = reduxGetState();
-		if(state.navigate === menu){ // back to store
-			menu = '';
-		}
-		reduxDispatch(navigateChange(menu));
-	}
+class HeaderMenu extends React.Component{	
 	navigateCart(){
-		this.navigateMenu("Cart");
+		this.props.navigateMenu("Cart");
 	}
 	navigateChat(){
-		this.navigateMenu("Chat");
+		this.props.navigateMenu("Chat");
 	}
 	navigateConfig(){
-		this.navigateMenu("Config");
+		this.props.navigateMenu("Config");
 	}
 	navigateOrder(){
-		this.navigateMenu("Order");
+		this.props.navigateMenu("Order");
 	}
 	render(){
 		const state = reduxGetState();

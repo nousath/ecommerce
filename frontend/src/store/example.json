@@ -156,7 +156,6 @@
 			name:"Store name",
 			description:"The best cart accesories",
 			logo:"",
-			url:"",
 			qr:"img/qrsample.png"
 		},
 		color:{

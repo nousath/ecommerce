@@ -54,7 +54,7 @@ function createStore(){
 							result:'ok'
 						});
 						// 3. log
-						mongo.log(storeId, 'create store', storeToken, 'annonymus');
+						mongo.log('create store', storeToken, 'annonymus', storeId);
 					})
 					.catch(reject);
 			})
@@ -69,7 +69,7 @@ function createSession(rolType, storeId = '', userId = ''){
 		const sessionToken = randomToken();
 		mongo.insert('session',{
 				token:sessionToken,
-				type:rolType, // visitoradmin
+				rol:rolType, // visitoradmin
 				userId:userId,
 				navigate:''
 			}, storeId)
@@ -80,67 +80,53 @@ function createSession(rolType, storeId = '', userId = ''){
 	});
 }
 
-// encapsulated check storeToken and sessionToken exists
-function checkStore(storeToken, sessionToken, createSessionIfFail = false){
+// check all options for variable empty
+function isEmpty(variable){
+	return variable === undefined || 
+		variable === null || 
+		variable === '' ||
+		variable === "undefined" ||
+		variable === "null";
+}
+
+// encapsulated security check token exists
+function checkStore(storeToken, sessionToken, locationParam = '',createSessionIfFail = false){
 	return new Promise((fullfill, reject)=>{
-		if(storeToken === undefined || storeToken === null || storeToken === ''){
+		if((isEmpty(storeToken) && createSessionIfFail) && isEmpty(locationParam)){
 			reject({
 				error:'Store token empty'
 			});
 			return;			
 		}
+		const location = (locationParam[0] === '/') ? locationParam.substring(1) : locationParam;
 		// step 1 get using parallel store and user info
 		var storeObject = null;
 		var sessionObject = null;
-		var waiting = 1; // wait all functions
+		var configObject = null;
+		var waiting = 0; // wait all functions
 		const nextStep = ()=>{
 			waiting--;
 			if(waiting == 0){
-				// security check session from same store
-				const storeId = storeObject.id;
-				if(sessionObject !== null){
-					if(storeId != sessionObject.storeId){
-						// security violation
-						reject({
-							error:'Session token from other store'
-						});
-						mongo.log(storeId, 'Security session from other store', sessionObject.token, '');
-						return;
-					}
-					fullfill([storeObject, sessionObject]);
-				}else{
-					if(createSessionIfFail){
-						// ux create a session for visitor user
-						createSession(SESSION_VISITOR_ANNON, storeId)
-							.then(sessionToken=>{
-								sessionObject = {
-									token:sessionToken,
-									type:SESSION_VISITOR_ANNON
-								};
-								fullfill([storeObject, sessionObject]);
-							})
-							.catch(reject);
-					}else{
-						reject({
-							error:'Session not found',
-							detail:sessionToken
-						});
-					}
-				}
+				checkSecurity(storeToken, storeObject, sessionToken, sessionObject, location, configObject, createSessionIfFail)
+					.then(fullfill)
+					.catch(reject);
 			}
 		};
 		// store 
-		mongo.store(storeToken).then(result=>{
-			storeObject = result;
-			nextStep();
-		}).catch(()=>{ // err
-			reject({
-				error:'Store not found',
-				detail:storeToken
+		if( ! isEmpty(storeToken)){
+			waiting++;
+			mongo.store(storeToken).then(result=>{
+				storeObject = result;
+				nextStep();
+			}).catch(()=>{ // err
+				reject({
+					error:'Store not found',
+					detail:storeToken
+				});
 			});
-		});
+		}
 		// session
-		if(sessionToken != ''){
+		if( ! isEmpty(sessionToken)){
 			waiting++;
 			mongo.session(sessionToken).then(result=>{
 				sessionObject = result;
@@ -151,7 +137,111 @@ function checkStore(storeToken, sessionToken, createSessionIfFail = false){
 				nextStep();
 			})
 		}
+		// location or storeName
+		if( ! isEmpty(location) && location !== '/'){
+			waiting++;
+			mongo.storeUrl(location).then(result=>{
+				configObject = result;
+				nextStep();
+			})
+			.catch(()=>{
+				// ux, dont stop for stop, create a new sessiontoken
+				nextStep();
+			})	
+		}
 	});
+}
+
+// after get info from store, session, config
+// continue from to check params
+function checkSecurity(storeToken, storeObject, sessionToken, sessionObject, location, configObject, createSessionIfFail){
+	return new Promise((fullfill,reject)=>{
+		var storeId = '';
+		if( ! isEmpty(storeObject)){
+			storeId = storeObject.id;
+		}else if( ! isEmpty(configObject)){
+			storeId = configObject.id;
+		}
+		// check tokens exists
+		if(isEmpty(configObject) && isEmpty(storeObject)){
+			reject({
+				error:'Token not found'
+			});
+			mongo.log('Token not found',storeToken+' '+location,storeId);
+			return;
+		}
+		// check location store exists
+		if( ! isEmpty(location) ){
+			if( isEmpty(configObject)){
+				reject({
+					error:'Store not exists'
+				});
+				mongo.log('Store not exists', location, storeId);
+			}else if( ! isEmpty(storeObject)){
+				if(location != storeObject.url){
+					reject({
+						error:'Location from other store'
+					});
+					mongo.log('Location from other store', storeObject.storeUrl + ' '+location, storeId);
+					return;	
+				}
+			}
+		}
+		// location from other store
+		if( ! isEmpty(configObject)){
+			if(storeId !== configObject.id){
+				// security violation
+				reject({
+					error:'Location from other store 2'
+				});
+				mongo.log('Location from other store', configObject.url + ' '+location, storeId);
+				return;
+			}
+		}
+		// security check session from same store
+		if( ! isEmpty(sessionObject)){
+			if(storeId != sessionObject.storeId){
+				// security violation
+				reject({
+					error:'Session token from other store'
+				});
+				mongo.log('Security session from other store', sessionObject.token, storeId);
+				return;
+			}
+		}else if( ! createSessionIfFail){
+			// dont create new session
+			reject({
+				error:'Session token not found'
+			});
+			mongo.log('Session token not found',sessionToken,storeId);
+			return;
+		}
+		// complete info
+		if( ! isEmpty(storeObject) && ! isEmpty(sessionObject)){
+			fullfill([storeObject,sessionObject]);
+			return;
+		}
+		// ux create a session for visitor user
+		const visitorSession = (storeObjectResult)=>{
+			createSession(SESSION_VISITOR_ANNON, storeId)
+				.then(sessionToken=>{
+					sessionObject = {
+						token:sessionToken,
+						type:SESSION_VISITOR_ANNON,
+						storeId:storeId,
+						navigate:''
+					};
+					fullfill([storeObjectResult, sessionObject]);
+				})
+				.catch(reject);
+		};
+		if( ! isEmpty(configObject) && isEmpty(storeObject)){
+			// case new visitor without tokens
+			visitorSession(configObject);
+		}else{
+			visitorSession(storeObject);
+		}
+	});	
 }
 
 // convert array to object for redux managment
@@ -180,10 +270,10 @@ function arrayToObject(result){
 //7. if userId has rol Admin
 //7.1 mark config with admin flag
 //8. if userId has rol visitor, omit config.chat_quick_answer
-function getStore(storeToken, sessionToken = ''){
+function getStore(storeToken, sessionToken = '', location = ''){
 	return new Promise((fullfill, reject)=>{
 		// step 1 get using parallel store and user info
-		checkStore(storeToken, sessionToken, true)
+		checkStore(storeToken, sessionToken, location, true)
 			.then(([storeObject, sessionObject])=>{
 				// step 2 get collections for all object filtered per store
 				//console.log('Step2', storeObject, sessionObject);
@@ -193,6 +283,15 @@ function getStore(storeToken, sessionToken = ''){
 					waiting--;
 					if(waiting == 0){
 						// after get alls collections
+						try{
+							// check if user is admin
+							redux.config.admin_user = ( sessionObject.rol === SESSION_ADMIN || 
+								sessionObject.rol === SESSION_ADMIN_ANNON);
+							// url config from session
+							redux.config.store.url = storeObject.url;
+						}catch(err){
+							//empty config dont propagate err							
+						}
 						fullfill(redux);
 					}
 				};
@@ -245,7 +344,7 @@ function getStore(storeToken, sessionToken = ''){
 // update info database
 function updateStore(storeToken, sessionToken, action){
 	return new Promise((fullfill, reject)=>{
-		checkStore(storeToken, sessionToken, false)
+		checkStore(storeToken, sessionToken)
 			.then(([storeObject, sessionObject])=>{
 				// execute same redux frontend actions on database
 				reduxAction(storeObject,sessionObject,action)
@@ -263,7 +362,7 @@ function updateStore(storeToken, sessionToken, action){
 // save files into mongodb for easy download multiple products
 function uploadFile(filecontent, storeToken, sessionToken){
 	return new Promise((fullfill,reject)=>{
-		checkStore(storeToken, sessionToken, false)
+		checkStore(storeToken, sessionToken)
 			.then(([storeObject, sessionObject])=>{
 				const filename = randomToken();
 				const storeId = storeObject.id;
