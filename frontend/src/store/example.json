@@ -164,6 +164,7 @@
 			text:"#666666",
 			link:"#053e7b"
 		},
+		chat_welcome:"May we help you with your shopping",
 		chat_quick_answer:[
 			"Hello, how can i help you",
 			"Thanks for contact us"

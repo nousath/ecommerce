@@ -282,27 +282,17 @@ function getStore(storeToken, sessionToken = '', location = ''){
 				const nextStep = ()=>{
 					waiting--;
 					if(waiting == 0){
-						// after get alls collections
-						try{
-							// check if user is admin
-							redux.config.admin_user = ( sessionObject.rol === SESSION_ADMIN || 
-								sessionObject.rol === SESSION_ADMIN_ANNON);
-							// url config from session
-							redux.config.store.url = storeObject.url;
-						}catch(err){
-							//empty config dont propagate err							
-						}
 						fullfill(redux);
 					}
 				};
-				// api options
+				// session info
 				const sessionToken = sessionObject.token;
 				redux.backend = {
 					sessionToken:sessionToken,
 					storeToken:storeObject.token
 				};
-				// navigate
-				redux.navigate = sessionObject.navigate;
+				redux.navigate = ( ! isEmpty(sessionObject.navigate)) ? sessionObject.navigate : '';
+				redux.chatTyping = (! isEmpty(sessionObject.chatTyping)) ? sessionObject.chatTyping : '';
 				// get product, category and config
 				const storeId = storeObject.id;
 				mongo.product(storeId).then(result=>{
@@ -311,14 +301,6 @@ function getStore(storeToken, sessionToken = '', location = ''){
 				.finally(nextStep);
 				mongo.category(storeId).then(result=>{
 					redux.categories = arrayToObject(result);
-				})
-				.finally(nextStep);
-				mongo.config(storeId).then(result=>{
-					if(result.length == 0){
-						redux.config = {}
-					}else{
-						redux.config = result[0];
-					}
 				})
 				.finally(nextStep);
 				// cart, order, chat
@@ -334,11 +316,43 @@ function getStore(storeToken, sessionToken = '', location = ''){
 					redux.chats = arrayToObject(result);
 				})
 				.finally(nextStep);
+				mongo.config(storeId).then(result=>{
+					if(result.length == 0){
+						redux.config = {}
+					}else{
+						redux.config = result[0];
+					}
+					// info from session in config tag
+					try{
+						// url config from session
+						redux.config.store.url = storeObject.url;
+					}catch(err){
+						//empty config dont propagate err							
+					}
+					// check if user is admin
+					const admin_user = ( sessionObject.rol === SESSION_ADMIN || 
+						sessionObject.rol === SESSION_ADMIN_ANNON);
+					redux.config.admin_user = admin_user;
+					if(admin_user){
+						// request additional info to admin					
+						
+						// statistics
 
-				// TODO build redux object for admin
+						// chat user
+
+						// order status
+
+					}
+				})
+				.finally(nextStep);
 			})
 			.catch(reject);	
 	});
+}
+
+// request list user with current navigate page
+function adminChats(){
+
 }
 
 // update info database

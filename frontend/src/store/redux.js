@@ -17,9 +17,9 @@ export function reduxGetState(){
 };
 
 export function reduxDispatch(action){
-	redux.dispatch(action);
+	return redux.dispatch(action);
 }
 
 export function reduxSubscribe(callback){
-	redux.subscribe(callback);
+	return redux.subscribe(callback);
 }

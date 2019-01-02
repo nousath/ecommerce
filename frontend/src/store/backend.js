@@ -82,6 +82,10 @@ function loadRedux(initialState){
 		}
 	}else{
 		reduxObject = initialState;
+		// save tokens to localStorage 
+		const backend = reduxObject.backend;
+		localStorage.setItem(storeTokenItem,backend.storeToken);
+		localStorage.setItem(sessionTokenItem,backend.sessionToken);
 	}
 	reduxCreateStore(reduxObject);
 	// subscribe localstorage
@@ -95,16 +99,14 @@ function createStore(){
 	return new Promise((fullfill,reject)=>{
 		api('createStore').then(response=>{
 			if(response.result === 'ok'){
-				const storeToken = response.storeToken;
-				const sessionToken = response.sessionToken;
-				// save localStorage
-				localStorage.setItem(storeTokenItem,storeToken);
-				localStorage.setItem(sessionTokenItem,sessionToken);
 				fullfill({
 					// default redux object
 					backend:{
-						storeToken:storeToken,
-						sessionToken:sessionToken
+						storeToken:response.storeToken,
+						sessionToken:response.sessionToken
+					},
+					config:{
+						admin_user:true
 					}
 				});
 			}else{
@@ -129,9 +131,7 @@ export function updateStore(state, action){
 			action:action
 		})
 		.then(fullfill)
-		.catch((err)=>{
-			reject();
-		});
+		.catch(reject);
 	});
 }
 

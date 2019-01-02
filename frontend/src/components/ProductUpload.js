@@ -17,7 +17,7 @@ class ProductUpload extends React.Component{
 	}
 	uploadFile(file){
 		const state = reduxGetState();
-		const newid = _.size(state.product) + 1;
+		const newid = _.size(state.products) + 1;
 		reduxDispatch(productCreate(newid,file.name));
 		getBase64(file)
 			.then(filecontent=>{

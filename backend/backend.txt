@@ -173,4 +173,6 @@ access control
 		type	// VA => VisitorAdmin, V => VisitorAnnonymous, AL => AdminLogged, VL => VisitorLogged
 		userId
 		timestamp
+		navigate
+		chatTyping
 	}

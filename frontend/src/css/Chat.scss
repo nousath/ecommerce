@@ -1,0 +1,49 @@
+@import 'useful.scss';
+@import 'general.scss';
+
+$chat-request-color:lightblue;
+$chat-response-color:lightgreen;
+
+.page-chat{
+	/* containers */
+	@include flex(column,nowrap,true);
+	div.chat-messages{
+		@include flex(column,nowrap,false,left,center);
+		width:100%;
+		* {
+			@include separate-elements(3);
+		}
+	}
+	div.chat-suggestions{
+		@extend .chat-messages;
+		margin-top:100px;
+		background-color:$footer-color;
+	}
+	div.chat-text{
+		@include flex(row,nowrap,false,center,center);
+		width:100%;
+		* {
+			@include separate-elements(2);
+		}
+		background-color:$footer-color;
+	}
+	/* chats */
+	.chat-message{
+		@include separate-elements(2);
+		@include border-radius(5px);
+		width:95%;
+	}
+	.chat-request{
+		@extend .chat-message;
+		background-color:$chat-request-color;
+		text-align:left;
+	}
+	.chat-response{
+		@extend .chat-message;
+		background-color:$chat-response-color;
+		text-align:right;
+	}
+	.chat-suggest{
+		@extend .chat-response
+	}
+}

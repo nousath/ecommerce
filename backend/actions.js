@@ -50,6 +50,22 @@ function reduxAction(storeObject, sessionObject, action){
 					.then(fullfill)
 					.catch(reject);
 				break;
+			case 'CHAT_TYPING':
+				mongo.update('session',{token:sessionObject.token},{"chatTyping":payload})
+					.then(fullfill)
+					.catch(reject);
+				break;
+			case 'CHAT_SEND':
+				mongo.insert('chat',{
+						id:payload.id,
+						message:payload.message,
+						timestamp:payload.timestamp,
+						request:payload.request,
+						sessionToken:sessionObject.token
+					},storeId)
+					.then(fullfill)
+					.catch(reject);
+				break;
 			default:
 				reject({
 					error:'Undefined action'
