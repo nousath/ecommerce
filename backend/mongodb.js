@@ -2,6 +2,7 @@
 MongoDB functions
 */
 const MongoClient = require('mongodb').MongoClient;
+const tools = require('./tools.js');
 // mongoDB Atlas
 //const uri = "mongodb+srv://devuser:YbXi1QeK5^6Z@jjperez89-u11ho.mongodb.net/ecommerce?retryWrites=true";
 // localhost
@@ -214,21 +215,6 @@ function DBLog(action, detail="", storeId = '', user = ""){
 	});
 }
 
-// remove attr _id, storeId, sessionToken
-function DBCleanInternals(result){
-	if(result === undefined || result === '' || result === null){
-		return result;
-	}else{
-		return result.map((doc)=>{
-			const forDelete = ['_id','storeId','sessionToken'];
-			for(var i = 0; i < forDelete.length; i++){
-				delete doc[forDelete[i]];
-			}
-			return doc;
-		});
-	}	
-}
-
 // encapsulated search one row into collection
 function DBDocumentExists(collectionName, findCriteria){
 	return new Promise((fullfill, reject)=>{
@@ -274,7 +260,7 @@ function DBSearchByStore(collectionName, storeId){
 				return collection.find({storeId:storeId}).toArray();
 			},(result=>{
 				DBDebug('Search by store '+collectionName);
-				fullfill(DBCleanInternals(result));
+				fullfill(tools.DBCleanInternals(result));
 			}),reject);
 		}
 	});
@@ -310,7 +296,7 @@ function DBSearchBySession(collectionName, storeId, sessionToken){
 				// NOTE: sessionId is unique key, indepent of store
 			},(result=>{
 				DBDebug('Search by session '+collectionName);
-				fullfill(DBCleanInternals(result));
+				fullfill(tools.DBCleanInternals(result));
 			}),reject);
 		}
 	});
@@ -402,9 +388,41 @@ function DBupdate(collectionName, find, set, storeId = '',upsert = false){
 	});
 }
 
+// walk for every document
+function DBCursor(collectionName,criteria,sortCriteria='',callback){
+	return new Promise((fullfill,reject)=>{
+		DBcollection(collectionName)
+			.then(collection=>{
+				const atEnd = (err)=>{
+					if(err){
+						reject(err);
+					}else{
+						fullfill();
+					}
+					DBdisconnect();
+				};
+				if(sortCriteria !== ''){
+					collection.find(criteria)
+						.sort(sortCriteria)
+						.forEach(callback,atEnd);
+				}else{
+					collection.find(criteria)
+						.forEach(callback,atEnd);
+				}
+			})
+			.catch((err)=>{
+				reject(err);
+				DBdisconnect();	
+			});
+	});
+}
+
 // exports
 module.exports = {
 	collection: DBcollection,
+	insert:DBinsert,
+	update:DBupdate,
+	cursor:DBCursor,
 	log:DBLog,
 	store:storeExists,
 	session:sessionExists,
@@ -414,7 +432,5 @@ module.exports = {
 	config:configSearch,
 	cart:cartSearch,
 	order:orderSearch,
-	chat:chatSearch,
-	insert:DBinsert,
-	update:DBupdate
+	chat:chatSearch
 }

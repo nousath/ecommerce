@@ -4,36 +4,13 @@ encapsulated database access, authenticate user and create log access
 */
 const mongo = require('./mongodb.js');
 const reduxAction = require('./actions.js').reduxAction;
-
-// useful function for generate random, https://gist.github.com/6174/6062387
-function randomToken() {
-  return Math.random().toString(36).substring(2, 15) + 
-  	Math.random().toString(36).substring(2, 15) +
-  	Math.random().toString(36).substring(2, 15);
-}
-
-function APIError(err){
-	console.log(err);
-}
-
-// TODO: separate download image of getStore
-// TODO: APIError, DBLog save to db return api response
-
-// user type constant
-const USER_ADMIN = 'A';
-const USER_SELLER = 'S';
-const USER_VISITOR = 'V';
-
-// session type constant
-const SESSION_ADMIN = 'A';
-const SESSION_VISITOR = 'V';
-const SESSION_ADMIN_ANNON = 'AA'; // annonymus user
-const SESSION_VISITOR_ANNON = 'VA';
+const admin = require('./admin.js'); // store owner or admin session
+const tools = require('./tools.js');
 
 // allow create store and products without email or sign up for UX and for show functionality and demos
 function createStore(){
 	return new Promise((fullfill, reject)=>{
-		const storeToken = randomToken();
+		const storeToken = tools.randomToken();
 		mongo.collection('store',collection=>{
 			return collection.countDocuments(); // store count for get max id
 		},count=>{
@@ -45,7 +22,7 @@ function createStore(){
 				})
 			.then(()=>{
 				// 2. insert DB session with type AdminAnnonymous
-				createSession(SESSION_ADMIN_ANNON, storeId)
+				createSession(tools.SESSION_ADMIN_ANNON, storeId)
 					.then(sessionToken=>{
 						// final result
 						fullfill({
@@ -66,7 +43,7 @@ function createStore(){
 // encapsulated create new session
 function createSession(rolType, storeId = '', userId = ''){
 	return new Promise((fullfill,reject)=>{
-		const sessionToken = randomToken();
+		const sessionToken = tools.randomToken();
 		mongo.insert('session',{
 				token:sessionToken,
 				rol:rolType, // visitoradmin
@@ -80,19 +57,10 @@ function createSession(rolType, storeId = '', userId = ''){
 	});
 }
 
-// check all options for variable empty
-function isEmpty(variable){
-	return variable === undefined || 
-		variable === null || 
-		variable === '' ||
-		variable === "undefined" ||
-		variable === "null";
-}
-
 // encapsulated security check token exists
 function checkStore(storeToken, sessionToken, locationParam = '',createSessionIfFail = false){
 	return new Promise((fullfill, reject)=>{
-		if((isEmpty(storeToken) && createSessionIfFail) && isEmpty(locationParam)){
+		if((tools.isEmpty(storeToken) && createSessionIfFail) && tools.isEmpty(locationParam)){
 			reject({
 				error:'Store token empty'
 			});
@@ -113,7 +81,7 @@ function checkStore(storeToken, sessionToken, locationParam = '',createSessionIf
 			}
 		};
 		// store 
-		if( ! isEmpty(storeToken)){
+		if( ! tools.isEmpty(storeToken)){
 			waiting++;
 			mongo.store(storeToken).then(result=>{
 				storeObject = result;
@@ -126,7 +94,7 @@ function checkStore(storeToken, sessionToken, locationParam = '',createSessionIf
 			});
 		}
 		// session
-		if( ! isEmpty(sessionToken)){
+		if( ! tools.isEmpty(sessionToken)){
 			waiting++;
 			mongo.session(sessionToken).then(result=>{
 				sessionObject = result;
@@ -138,7 +106,7 @@ function checkStore(storeToken, sessionToken, locationParam = '',createSessionIf
 			})
 		}
 		// location or storeName
-		if( ! isEmpty(location) && location !== '/'){
+		if( ! tools.isEmpty(location) && location !== '/'){
 			waiting++;
 			mongo.storeUrl(location).then(result=>{
 				configObject = result;
@@ -157,27 +125,32 @@ function checkStore(storeToken, sessionToken, locationParam = '',createSessionIf
 function checkSecurity(storeToken, storeObject, sessionToken, sessionObject, location, configObject, createSessionIfFail){
 	return new Promise((fullfill,reject)=>{
 		var storeId = '';
-		if( ! isEmpty(storeObject)){
+		if( ! tools.isEmpty(storeObject)){
 			storeId = storeObject.id;
-		}else if( ! isEmpty(configObject)){
+		}else if( ! tools.isEmpty(configObject)){
 			storeId = configObject.id;
 		}
 		// check tokens exists
-		if(isEmpty(configObject) && isEmpty(storeObject)){
+		if(tools.isEmpty(configObject) && tools.isEmpty(storeObject)){
 			reject({
 				error:'Token not found'
 			});
 			mongo.log('Token not found',storeToken+' '+location,storeId);
 			return;
 		}
+
+		// TODO for avoid main in the middle attack
+		// generate password for every session
+		// frontend will send sha256 (password + random)
+
 		// check location store exists
-		if( ! isEmpty(location) ){
-			if( isEmpty(configObject)){
+		if( ! tools.isEmpty(location) ){
+			if( tools.isEmpty(configObject)){
 				reject({
 					error:'Store not exists'
 				});
 				mongo.log('Store not exists', location, storeId);
-			}else if( ! isEmpty(storeObject)){
+			}else if( ! tools.isEmpty(storeObject)){
 				if(location != storeObject.url){
 					reject({
 						error:'Location from other store'
@@ -188,7 +161,7 @@ function checkSecurity(storeToken, storeObject, sessionToken, sessionObject, loc
 			}
 		}
 		// location from other store
-		if( ! isEmpty(configObject)){
+		if( ! tools.isEmpty(configObject)){
 			if(storeId !== configObject.id){
 				// security violation
 				reject({
@@ -199,7 +172,7 @@ function checkSecurity(storeToken, storeObject, sessionToken, sessionObject, loc
 			}
 		}
 		// security check session from same store
-		if( ! isEmpty(sessionObject)){
+		if( ! tools.isEmpty(sessionObject)){
 			if(storeId != sessionObject.storeId){
 				// security violation
 				reject({
@@ -217,17 +190,17 @@ function checkSecurity(storeToken, storeObject, sessionToken, sessionObject, loc
 			return;
 		}
 		// complete info
-		if( ! isEmpty(storeObject) && ! isEmpty(sessionObject)){
+		if( ! tools.isEmpty(storeObject) && ! tools.isEmpty(sessionObject)){
 			fullfill([storeObject,sessionObject]);
 			return;
 		}
 		// ux create a session for visitor user
 		const visitorSession = (storeObjectResult)=>{
-			createSession(SESSION_VISITOR_ANNON, storeId)
+			createSession(tools.SESSION_VISITOR_ANNON, storeId)
 				.then(sessionToken=>{
 					sessionObject = {
 						token:sessionToken,
-						type:SESSION_VISITOR_ANNON,
+						type:tools.SESSION_VISITOR_ANNON,
 						storeId:storeId,
 						navigate:''
 					};
@@ -235,21 +208,13 @@ function checkSecurity(storeToken, storeObject, sessionToken, sessionObject, loc
 				})
 				.catch(reject);
 		};
-		if( ! isEmpty(configObject) && isEmpty(storeObject)){
+		if( ! tools.isEmpty(configObject) && tools.isEmpty(storeObject)){
 			// case new visitor without tokens
 			visitorSession(configObject);
 		}else{
 			visitorSession(storeObject);
 		}
 	});	
-}
-
-// convert array to object for redux managment
-function arrayToObject(result){
-	return result.reduce(function ( total, current ) {
-	    total[ current.id ] = current;
-	    return total;
-	}, {});
 }
 
 // MAIN function, requested at software start, all frontend will build it base on this
@@ -278,7 +243,7 @@ function getStore(storeToken, sessionToken = '', location = ''){
 				// step 2 get collections for all object filtered per store
 				//console.log('Step2', storeObject, sessionObject);
 				var redux = new Object();
-				var waiting = 6;
+				var waiting = 3;
 				const nextStep = ()=>{
 					waiting--;
 					if(waiting == 0){
@@ -286,36 +251,52 @@ function getStore(storeToken, sessionToken = '', location = ''){
 					}
 				};
 				// session info
+				const admin_user = ( sessionObject.rol === tools.SESSION_ADMIN || 
+						sessionObject.rol === tools.SESSION_ADMIN_ANNON);
 				const sessionToken = sessionObject.token;
 				redux.backend = {
 					sessionToken:sessionToken,
 					storeToken:storeObject.token
 				};
-				redux.navigate = ( ! isEmpty(sessionObject.navigate)) ? sessionObject.navigate : '';
-				redux.chatTyping = (! isEmpty(sessionObject.chatTyping)) ? sessionObject.chatTyping : '';
+				redux.navigate = ( ! tools.isEmpty(sessionObject.navigate)) ? sessionObject.navigate : '';
+				redux.chatTyping = (! tools.isEmpty(sessionObject.chatTyping)) ? sessionObject.chatTyping : '';				
 				// get product, category and config
 				const storeId = storeObject.id;
 				mongo.product(storeId).then(result=>{
-					redux.products = arrayToObject(result);
+					redux.products = tools.arrayToObject(result);
 				})
 				.finally(nextStep);
 				mongo.category(storeId).then(result=>{
-					redux.categories = arrayToObject(result);
+					redux.categories = tools.arrayToObject(result);
 				})
 				.finally(nextStep);
 				// cart, order, chat
-				mongo.cart(storeId, sessionToken).then(result=>{
-					redux.cart = result;
-				})
-				.finally(nextStep);
-				mongo.order(storeId, sessionToken).then(result=>{
-					redux.orders = arrayToObject(result);
-				})
-				.finally(nextStep);
-				mongo.chat(storeId, sessionToken).then(result=>{
-					redux.chats = arrayToObject(result);
-				})
-				.finally(nextStep);
+				if( ! admin_user){
+					waiting += 3;
+					mongo.cart(storeId, sessionToken).then(result=>{
+						redux.cart = result;
+					})
+					.finally(nextStep);
+					mongo.order(storeId, sessionToken).then(result=>{
+						redux.orders = tools.arrayToObject(result);
+					})
+					.finally(nextStep);
+					mongo.chat(storeId, sessionToken).then(result=>{
+						redux.chats = tools.arrayToObject(result);
+					})
+					.finally(nextStep);
+				}else{
+					// request additional info to admin					
+						
+					// statistics
+
+					// chat user
+					waiting++;
+					admin.chats(storeObject, sessionObject).then(result=>{
+						redux.chatsAdmin = tools.arrayToObject(result);
+					}).finally(nextStep);
+					// order status
+				}
 				mongo.config(storeId).then(result=>{
 					if(result.length == 0){
 						redux.config = {}
@@ -329,20 +310,8 @@ function getStore(storeToken, sessionToken = '', location = ''){
 					}catch(err){
 						//empty config dont propagate err							
 					}
-					// check if user is admin
-					const admin_user = ( sessionObject.rol === SESSION_ADMIN || 
-						sessionObject.rol === SESSION_ADMIN_ANNON);
+					// check if user is admin					
 					redux.config.admin_user = admin_user;
-					if(admin_user){
-						// request additional info to admin					
-						
-						// statistics
-
-						// chat user
-
-						// order status
-
-					}
 				})
 				.finally(nextStep);
 			})
@@ -350,10 +319,6 @@ function getStore(storeToken, sessionToken = '', location = ''){
 	});
 }
 
-// request list user with current navigate page
-function adminChats(){
-
-}
 
 // update info database
 function updateStore(storeToken, sessionToken, action){
@@ -378,7 +343,7 @@ function uploadFile(filecontent, storeToken, sessionToken){
 	return new Promise((fullfill,reject)=>{
 		checkStore(storeToken, sessionToken)
 			.then(([storeObject, sessionObject])=>{
-				const filename = randomToken();
+				const filename = tools.randomToken();
 				const storeId = storeObject.id;
 				mongo.insert('file',{
 						token:randomToken,

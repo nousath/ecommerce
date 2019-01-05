@@ -41,9 +41,15 @@ function reduxAction(storeObject, sessionObject, action){
 					.catch(reject);
 				break;
 			case 'NAVIGATE_CHANGE': // user ui
-				mongo.update('session',{token:sessionObject.token},{"navigate":payload})
+				mongo.update('session',
+					{token:sessionObject.token},
+					{
+						"navigate":payload,
+						"activity":new Date().getTime()
+					})
 					.then(fullfill)
 					.catch(reject);
+				// TODO create navigate history
 				break;
 			case 'NOTIFICATION_ERROR_FRONTEND': // error user ui
 				mongo.log('Error UI', payload.message, storeId, sessionObject.userId)
@@ -51,7 +57,12 @@ function reduxAction(storeObject, sessionObject, action){
 					.catch(reject);
 				break;
 			case 'CHAT_TYPING':
-				mongo.update('session',{token:sessionObject.token},{"chatTyping":payload})
+				mongo.update('session',
+					{token:sessionObject.token},
+					{
+						"chatTyping":payload,
+						"activity":new Date().getTime(),
+					})
 					.then(fullfill)
 					.catch(reject);
 				break;

@@ -46,4 +46,7 @@ $chat-response-color:lightgreen;
 	.chat-suggest{
 		@extend .chat-response
 	}
+	tr.rowEven{
+		background-color:$border-color;	
+	}
 }

@@ -1,10 +1,10 @@
 
 # Ecommerce app
 
-> The best way learn something new, is use it in a project
+> The best way learn something, is use it in a project
 
 #### This is a simple ecommerce app for local stores, just for learn and practice new technologies
-1. Download the app or go to [link](https://jjperez89.github.io/ecommerce/design)
+1. Download the app or go to website
 2. Upload pictures or images of products and/or services. The app will create a complete website and an app when customer can create orders and communicate with the store owner
 3. Share link of ecommerce on social network
 
@@ -24,7 +24,7 @@
 - React-Native
 - Redux
 #### Backend
-- NodeJS on AWS Lambda
+- NodeJS over AWS Lambda
 - MongoDB Atlas
 
 > All comments or contribute are welcome!

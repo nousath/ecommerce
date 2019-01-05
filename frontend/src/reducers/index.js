@@ -7,6 +7,7 @@ import { navigateReducers } from '../reducers/navigate.js'
 import { configReducers } from '../reducers/config.js'
 import { chatsReducers } from '../reducers/chats.js'
 import { chatTypingReducers } from '../reducers/chats.js'
+import { chatsAdminReducers } from '../reducers/chats.js'
 import { searchTypingReducers } from '../reducers/search.js'
 import { backendReducers } from '../reducers/backend.js'
 import { notificationsReducers } from '../reducers/notifications.js'
@@ -22,5 +23,6 @@ export default combineReducers({
 	chatTyping:chatTypingReducers,
 	config:configReducers,
 	backend:backendReducers,
-	notifications:notificationsReducers
+	notifications:notificationsReducers,
+	chatsAdmin:chatsAdminReducers
 });

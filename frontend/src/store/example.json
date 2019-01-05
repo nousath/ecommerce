@@ -149,7 +149,7 @@
 			request:false
 		}
 	},
-	chat_typing:"",
+	chatTyping:"",
 	config:{
 		admin_user:false,
 		store:{
@@ -237,18 +237,19 @@
 		orders:3,
 		chats:2
 	},
-	log:[
-		{
-			action:"See product x",
-			timestamp:0,
-			user:"Name"
-		},
-		{
-			action:"Add cart product x",
-			timestamp:0,
-			user:"Name"
+	chatsAdmin:{ // info user visiting store
+		id:{
+			id:"", // count
+			sessionToken:""
+			user:"Annonymous", // annonymous or username
+			timestamp:0, // session create
+			activity:0, // last activity
+			chatTyping:""
+			chats:{} // same structure redux.chats 
 		}
-	],
+	},
+	ordersAdmin:{},
+	cartsAdmin:{},
 	backend:{
 		storeToken:"",
 		sessionToken:""

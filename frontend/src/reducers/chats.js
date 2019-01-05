@@ -26,3 +26,11 @@ export function chatTypingReducers(state = "", action) {
             return state;
     }
 }
+
+// chat info from others session
+export function chatsAdminReducers(state = {}, action) {
+    switch (action.type) {
+        default:
+            return state;
+    }
+}
